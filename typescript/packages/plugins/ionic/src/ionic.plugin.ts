@@ -1,4 +1,4 @@
-import { PluginBase } from "@goat-sdk/core";
+import { type Chain, PluginBase } from "@goat-sdk/core";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm";
 import { IonicService } from "./ionic.service";
 

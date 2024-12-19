@@ -7,6 +7,10 @@
     "clean": "rm -rf dist",
     "test": "vitest run --passWithNoTests"
   },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "@goat-sdk/core": "workspace:*",
     "@goat-sdk/wallet-evm": "workspace:*",
@@ -17,5 +21,15 @@
   "peerDependencies": {
     "@goat-sdk/core": "workspace:*",
     "viem": "catalog:"
-  }
+  },
+  "homepage": "https://ohmygoat.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goat-sdk/goat.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/goat-sdk/goat/issues"
+  },
+  "keywords": ["ai", "agents", "web3"]
 } 
