@@ -35,6 +35,10 @@
             "path": "./typescript/packages/plugins/erc20"
         },
         {
+            "name": "[Plugin] 💰 erc721",
+            "path": "./typescript/packages/plugins/erc721"
+        },
+        {
             "name": "[Plugin] 🎰 polymarket",
             "path": "./typescript/packages/plugins/polymarket"
         },
@@ -49,6 +53,10 @@
         {
             "name": "[Plugin] 🪐 jupiter",
             "path": "./typescript/packages/plugins/jupiter"
+        },
+        {
+            "name": "[Plugin] 🔶 kim",
+            "path": "./typescript/packages/plugins/kim"
         },
         {
             "name": "[Plugin] ☄️ meteora",

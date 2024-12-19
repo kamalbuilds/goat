@@ -1,5 +1,17 @@
 # @goat-sdk/wallet-solana
 
+## 0.2.4
+
+### Patch Changes
+
+- de8533d: Fix transaction instructions
+
+## 0.2.3
+
+### Patch Changes
+
+- b9cb39c: Wait for transaction confirmation
+
 ## 0.2.2
 
 ### Patch Changes

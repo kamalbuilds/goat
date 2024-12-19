@@ -1,5 +1,19 @@
 # goat-examples-langchain-viem
 
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [c565119]
+  - @goat-sdk/plugin-erc20@0.2.2
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [f10e6d1]
+  - @goat-sdk/adapter-langchain@0.2.1
+
 ## 0.2.1
 
 ### Patch Changes
