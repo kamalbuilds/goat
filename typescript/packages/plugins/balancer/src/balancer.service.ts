@@ -1,6 +1,6 @@
 import { Tool } from "@goat-sdk/core";
 import type { EVMWalletClient } from "@goat-sdk/wallet-evm";
-import { BalancerApi, ChainId, Slippage, SwapKind, Token, Swap, AddLiquidity, AddLiquidityKind } from "@balancer/sdk";
+import { BalancerApi, ChainId, Slippage, SwapKind, Token, Swap, AddLiquidity, AddLiquidityKind, TokenAmount } from "@balancer/sdk";
 import { SwapParameters, LiquidityParameters } from "./parameters";
 
 export class BalancerService {
@@ -13,24 +13,29 @@ export class BalancerService {
             walletClient.getChain().id as ChainId
         );
 
+        const tokenInAddress = await walletClient.resolveAddress(parameters.tokenIn);
+        const tokenOutAddress = await walletClient.resolveAddress(parameters.tokenOut);
+
         const tokenIn = new Token(
             walletClient.getChain().id as ChainId,
-            parameters.tokenIn,
+            tokenInAddress,
             18
         );
 
         const tokenOut = new Token(
             walletClient.getChain().id as ChainId,
-            parameters.tokenOut,
+            tokenOutAddress,
             18
         );
 
-        const swapAmount = BigInt(parameters.amountIn);
+        const swapAmount : TokenAmount = {
+            amount: BigInt(parameters.amountIn),
+        };
 
         const sorPaths = await balancerApi.sorSwapPaths.fetchSorSwapPaths({
             chainId: walletClient.getChain().id as ChainId,
-            tokenIn: parameters.tokenIn,
-            tokenOut: parameters.tokenOut,
+            tokenIn: tokenInAddress,
+            tokenOut: tokenOutAddress,
             swapKind: SwapKind.GivenIn,
             swapAmount,
         });
@@ -41,19 +46,24 @@ export class BalancerService {
             swapKind: SwapKind.GivenIn,
         });
 
-        const updated = await swap.query(walletClient.transport);
+        const provider = await walletClient.read({
+            address: tokenInAddress,
+            abi: [],
+            functionName: ""
+        });
+
+        const updated = await swap.query(provider);
 
         const callData = swap.buildCall({
-            slippage: Slippage.fromPercentage(parameters.slippage),
+            slippage: Slippage.fromPercentage(`${Number(parameters.slippage)}`),
             deadline: parameters.deadline ? BigInt(parameters.deadline) : BigInt(Math.floor(Date.now() / 1000) + 3600),
             queryOutput: updated,
             wethIsEth: parameters.wethIsEth,
         });
 
         const tx = await walletClient.sendTransaction({
-            to: callData.to,
-            data: callData.callData,
-            value: callData.value,
+            to: callData.to as string,
+            value: callData.value
         });
 
         return tx.hash;
@@ -68,18 +78,28 @@ export class BalancerService {
             walletClient.getChain().id as ChainId
         );
 
-        const poolState = await balancerApi.pools.fetchPoolState(parameters.pool);
+        const poolAddress = await walletClient.resolveAddress(parameters.pool);
+        const poolState = await balancerApi.pools.fetchPoolState(poolAddress);
 
-        const amountsIn = parameters.amounts.map(amount => ({
-            address: amount.token,
-            decimals: amount.decimals,
-            rawAmount: BigInt(amount.amount),
-        }));
+        const amountsIn = await Promise.all(parameters.amounts.map(async amount => ({
+            amount: BigInt(amount.amount),
+            token: new Token(
+                walletClient.getChain().id as ChainId,
+                await walletClient.resolveAddress(amount.token),
+                amount.decimals
+            )
+        })));
+
+        const provider = await walletClient.read({
+            address: poolAddress,
+            abi: [],
+            functionName: ""
+        });
 
         const addLiquidityInput = {
             amountsIn,
             chainId: walletClient.getChain().id as ChainId,
-            rpcUrl: walletClient.getChain().rpcUrl,
+            provider,
             kind: AddLiquidityKind.Unbalanced,
         };
 
@@ -88,15 +108,14 @@ export class BalancerService {
 
         const call = addLiquidity.buildCall({
             ...queryOutput,
-            slippage: Slippage.fromPercentage(parameters.slippage),
+            slippage: Slippage.fromPercentage(`${Number(parameters.slippage)}`),
             chainId: walletClient.getChain().id as ChainId,
             wethIsEth: parameters.wethIsEth,
         });
 
         const tx = await walletClient.sendTransaction({
-            to: call.to,
-            data: call.callData,
-            value: call.value,
+            to: call.to as string,
+            value: call.value
         });
 
         return tx.hash;
