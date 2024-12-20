@@ -2,7 +2,6 @@ import { Tool } from "@goat-sdk/core";
 import type { EVMWalletClient } from "@goat-sdk/wallet-evm";
 import { parseUnits } from "viem";
 import { ROUTER_ABI } from "./abi/router";
-import { POOL_ABI } from "./abi/pool";
 import { SwapExactTokensParams, AddLiquidityParams } from "./parameters";
 
 const ROUTER_ADDRESS = "0xa062aE8A9c5e11aaA026fc2670B0D65cCc8B2858";
@@ -19,6 +18,12 @@ export class VelodromeService {
         const amountIn = parseUnits(parameters.amountIn, parameters.tokenInDecimals);
         const amountOutMin = parseUnits(parameters.amountOutMin, parameters.tokenOutDecimals);
 
+        const routes = [{
+            from: parameters.tokenIn,
+            to: parameters.tokenOut,
+            stable: false
+        }];
+
         const hash = await walletClient.sendTransaction({
             to: ROUTER_ADDRESS,
             abi: ROUTER_ABI,
@@ -26,7 +31,7 @@ export class VelodromeService {
             args: [
                 amountIn,
                 amountOutMin,
-                [parameters.tokenIn, parameters.tokenOut],
+                routes,
                 parameters.to || walletClient.getAddress(),
                 deadline,
             ],

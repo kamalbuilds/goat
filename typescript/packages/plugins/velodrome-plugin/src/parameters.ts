@@ -9,6 +9,7 @@ export class SwapExactTokensParams extends createToolParameters(
         amountOutMin: z.string().describe("The minimum amount of output tokens to receive"),
         tokenInDecimals: z.number().describe("The decimals of the input token"),
         tokenOutDecimals: z.number().describe("The decimals of the output token"),
+        stable: z.boolean().describe("Whether to use stable or volatile pool for swap"),
         to: z.string().optional().describe("The address to receive the output tokens"),
     }),
 ) {}
