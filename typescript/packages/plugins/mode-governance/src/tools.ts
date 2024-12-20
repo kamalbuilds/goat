@@ -1,4 +1,4 @@
-import type { EVMWalletClient, Tool } from "@goat-sdk/core";
+import { EVMWalletClient } from "@goat-sdk/wallet-evm";
 import { parseUnits, formatUnits } from "viem";
 import { VOTING_ESCROW_ABI, MODE_TOKEN_ABI, BPT_TOKEN_ABI } from "./abi";
 import {
@@ -8,10 +8,9 @@ import {
     BPT_VOTING_ESCROW,
 } from "./constants";
 import {
-    stakeParametersSchema,
-    unstakeParametersSchema,
-    getStakeInfoParametersSchema,
-    getBalanceParametersSchema,
+    StakeParameters,
+    GetStakeInfoParameters,
+    GetBalanceParameters,
 } from "./parameters";
 
 export function getTools(walletClient: EVMWalletClient): Tool[] {
@@ -21,7 +20,7 @@ export function getTools(walletClient: EVMWalletClient): Tool[] {
     const stakeTool: Tool = {
         name: "stake_tokens",
         description: "This {{tool}} stakes MODE or BPT tokens in the Mode governance system",
-        parameters: stakeParametersSchema,
+        parameters: StakeParameters,
         method: async (parameters) => {
             const tokenAddress = parameters.tokenType === "MODE" ? MODE_TOKEN_ADDRESS : BPT_TOKEN_ADDRESS;
             const escrowAddress = parameters.tokenType === "MODE" ? MODE_VOTING_ESCROW : BPT_VOTING_ESCROW;
@@ -53,7 +52,7 @@ export function getTools(walletClient: EVMWalletClient): Tool[] {
     const getStakeInfoTool: Tool = {
         name: "get_stake_info",
         description: "This {{tool}} gets staking information including warmup and cooldown periods",
-        parameters: getStakeInfoParametersSchema,
+        parameters: GetStakeInfoParameters,
         method: async (parameters) => {
             const escrowAddress = parameters.tokenType === "MODE" ? MODE_VOTING_ESCROW : BPT_VOTING_ESCROW;
             const userAddress = await walletClient.getAddress();
@@ -91,7 +90,7 @@ export function getTools(walletClient: EVMWalletClient): Tool[] {
     const getBalanceTool: Tool = {
         name: "get_balance",
         description: "This {{tool}} gets the balance of MODE, BPT, veMode, or veBPT tokens",
-        parameters: getBalanceParametersSchema,
+        parameters: GetBalanceParameters,
         method: async (parameters) => {
             const userAddress = await walletClient.getAddress();
             let tokenAddress;

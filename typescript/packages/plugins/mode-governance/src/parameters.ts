@@ -1,19 +1,29 @@
+import { createToolParameters } from "@goat-sdk/core";
 import { z } from "zod";
 
-export const stakeParametersSchema = z.object({
+const TokenType = z.enum(["MODE", "BPT"]);
+const ExtendedTokenType = z.enum(["MODE", "BPT", "veMode", "veBPT"]);
+
+type TokenType = z.infer<typeof TokenType>;
+type ExtendedTokenType = z.infer<typeof ExtendedTokenType>;
+
+export type StakeParametersType = z.infer<typeof StakeSchema>;
+export type GetStakeInfoParametersType = z.infer<typeof GetStakeInfoSchema>;
+export type GetBalanceParametersType = z.infer<typeof GetBalanceSchema>;
+
+const StakeSchema = z.object({
     amount: z.string().describe("The amount of tokens to stake"),
-    tokenType: z.enum(["MODE", "BPT"]).describe("The type of token to stake (MODE or BPT)"),
+    tokenType: TokenType.describe("The type of token to stake (MODE or BPT)"),
 });
 
-export const unstakeParametersSchema = z.object({
-    amount: z.string().describe("The amount of tokens to unstake"),
-    tokenType: z.enum(["MODE", "BPT"]).describe("The type of token to unstake (MODE or BPT)"),
+const GetStakeInfoSchema = z.object({
+    tokenType: TokenType.describe("The type of token to get info for (MODE or BPT)"),
 });
 
-export const getStakeInfoParametersSchema = z.object({
-    tokenType: z.enum(["MODE", "BPT"]).describe("The type of token to get info for (MODE or BPT)"),
+const GetBalanceSchema = z.object({
+    tokenType: ExtendedTokenType.describe("The type of token to get balance for"),
 });
 
-export const getBalanceParametersSchema = z.object({
-    tokenType: z.enum(["MODE", "BPT", "veMode", "veBPT"]).describe("The type of token to get balance for"),
-}); 
+export class StakeParameters extends createToolParameters(StakeSchema) {}
+export class GetStakeInfoParameters extends createToolParameters(GetStakeInfoSchema) {}
+export class GetBalanceParameters extends createToolParameters(GetBalanceSchema) {} 
