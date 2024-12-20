@@ -14,7 +14,8 @@
   "dependencies": {
     "@goat-sdk/core": "workspace:*",
     "@goat-sdk/wallet-evm": "workspace:*",
-    "@ionicprotocol/sdk": "^1.0.0",
+    "@ionicprotocol/sdk": "^0.7.1",
+    "@ionicprotocol/chains": "^0.3.9",
     "viem": "catalog:",
     "zod": "catalog:"
   },
