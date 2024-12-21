@@ -1,6 +1,6 @@
 {
-    "name": "@goat-sdk/wallet-lit",
-    "version": "0.2.5",
+    "name": "@goat-sdk/adapter-model-context-protocol",
+    "version": "0.2.1",
     "sideEffects": false,
     "files": ["dist/**/*", "README.md", "package.json"],
     "scripts": {
@@ -13,25 +13,12 @@
     "types": "./dist/index.d.ts",
     "dependencies": {
         "@goat-sdk/core": "workspace:*",
-        "@goat-sdk/wallet-evm": "workspace:*",
-        "@goat-sdk/wallet-solana": "workspace:*",
-        "@lit-protocol/auth-helpers": "catalog:",
-        "@lit-protocol/constants": "catalog:",
-        "@lit-protocol/contracts-sdk": "catalog:",
-        "@lit-protocol/lit-auth-client": "catalog:",
-        "@lit-protocol/lit-node-client": "catalog:",
-        "@lit-protocol/misc": "catalog:",
-        "@lit-protocol/wrapped-keys": "catalog:",
-        "@solana/web3.js": "catalog:",
-        "ethers": "5.7.2",
-        "viem": "catalog:"
+        "@modelcontextprotocol/sdk": "catalog:",
+        "zod-to-json-schema": "catalog:"
     },
     "peerDependencies": {
         "@goat-sdk/core": "workspace:*",
-        "viem": "catalog:"
-    },
-    "devDependencies": {
-        "@lit-protocol/types": "catalog:"
+        "@modelcontextprotocol/sdk": "catalog:"
     },
     "homepage": "https://ohmygoat.dev",
     "repository": {
