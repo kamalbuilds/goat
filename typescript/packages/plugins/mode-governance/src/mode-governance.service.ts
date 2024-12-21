@@ -16,21 +16,11 @@ import {
 
 export class ModeGovernanceService {
     @Tool({
-        description: "Stakes MODE or BPT tokens in the Mode governance system",
+        description: "Stake MODE or BPT tokens in the Mode governance system. Requires MODE or BPT tokens to be approved first.",
     })
     async stakeTokens(walletClient: EVMWalletClient, parameters: StakeParameters) {
-        const tokenAddress = parameters.tokenType === "MODE" ? MODE_TOKEN_ADDRESS : BPT_TOKEN_ADDRESS;
         const escrowAddress = parameters.tokenType === "MODE" ? MODE_VOTING_ESCROW : BPT_VOTING_ESCROW;
         
-        const approveHash = await walletClient.sendTransaction({
-            to: tokenAddress,
-            abi: parameters.tokenType === "MODE" ? MODE_TOKEN_ABI : BPT_TOKEN_ABI,
-            functionName: "approve",
-            args: [escrowAddress, parseUnits(parameters.amount, 18)],
-        });
-
-        await walletClient.waitForTransactionReceipt({ hash: approveHash.hash });
-
         const stakeHash = await walletClient.sendTransaction({
             to: escrowAddress,
             abi: VOTING_ESCROW_ABI,
@@ -42,7 +32,7 @@ export class ModeGovernanceService {
     }
 
     @Tool({
-        description: "Gets staking information including warmup and cooldown periods",
+        description: "Get staking information including warmup and cooldown periods",
     })
     async getStakeInfo(walletClient: EVMWalletClient, parameters: GetStakeInfoParameters) {
         const escrowAddress = parameters.tokenType === "MODE" ? MODE_VOTING_ESCROW : BPT_VOTING_ESCROW;
@@ -77,39 +67,29 @@ export class ModeGovernanceService {
     }
 
     @Tool({
-        description: "Gets the balance of MODE, BPT, veMode, or veBPT tokens",
+        description: "Get the balance of MODE, BPT, veMode, or veBPT tokens for any address",
     })
-    async getBalance(walletClient: EVMWalletClient, parameters: GetBalanceParameters) {
-        const userAddress = await walletClient.getAddress();
-        let tokenAddress;
-        let abi;
-
+    async getBalance(walletClient: EVMWalletClient, parameters: GetBalanceParameters & { address?: string }) {
+        const userAddress = parameters.address || await walletClient.getAddress();
+        
         switch (parameters.tokenType) {
-            case "MODE":
-                tokenAddress = MODE_TOKEN_ADDRESS;
-                abi = MODE_TOKEN_ABI;
-                break;
-            case "BPT":
-                tokenAddress = BPT_TOKEN_ADDRESS;
-                abi = BPT_TOKEN_ABI;
-                break;
             case "veMode":
-                tokenAddress = MODE_VOTING_ESCROW;
-                abi = VOTING_ESCROW_ABI;
-                break;
+                return formatUnits(await walletClient.read({
+                    address: MODE_VOTING_ESCROW,
+                    abi: VOTING_ESCROW_ABI,
+                    functionName: "balanceOf",
+                    args: [userAddress],
+                }), 18);
             case "veBPT":
-                tokenAddress = BPT_VOTING_ESCROW;
-                abi = VOTING_ESCROW_ABI;
-                break;
+                return formatUnits(await walletClient.read({
+                    address: BPT_VOTING_ESCROW,
+                    abi: VOTING_ESCROW_ABI,
+                    functionName: "balanceOf",
+                    args: [userAddress],
+                }), 18);
+            default:
+                // For MODE and BPT, we are using the ERC20 plugin instead as discussed in the PR 87
+                throw new Error("Use ERC20 plugin to check MODE or BPT balances");
         }
-
-        const balance = await walletClient.read({
-            address: tokenAddress,
-            abi,
-            functionName: "balanceOf",
-            args: [userAddress],
-        });
-
-        return formatUnits(balance, 18);
     }
 } 
