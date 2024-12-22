@@ -1,12 +1,24 @@
 import { parseAbi } from "viem";
 
 export const VOTING_ESCROW_ABI = parseAbi([
-    "function stake(uint256 amount) external",
-    "function unstake(uint256 amount) external",
-    "function balanceOf(address account) external view returns (uint256)",
-    "function getWarmupPeriod() external view returns (uint256)",
-    "function getCooldownPeriod() external view returns (uint256)",
-    "function getUserStakeInfo(address user) external view returns (uint256 stakedAmount, uint256 warmupEndTime, uint256 cooldownEndTime)",
+    "function createLock(uint256 _value) external returns (uint256)",
+    "function createLockFor(uint256 _value, address _to) external returns (uint256)",
+    "function withdraw(uint256 _tokenId) external",
+    "function beginWithdrawal(uint256 _tokenId) external",
+    
+    "function locked(uint256 _tokenId) external view returns ((uint208 amount, uint48 start))",
+    "function votingPower(uint256 _tokenId) external view returns (uint256)",
+    "function votingPowerForAccount(address _account) external view returns (uint256 accountVotingPower)",
+    "function totalVotingPower() external view returns (uint256)",
+    "function totalLocked() external view returns (uint256)",
+    "function minDeposit() external view returns (uint256)",
+    "function isVoting(uint256 _tokenId) external view returns (bool)",
+    "function ownedTokens(address _owner) external view returns (uint256[] tokenIds)",
+    
+    "function setMinDeposit(uint256 _minDeposit) external",
+    "function pause() external",
+    "function unpause() external",
+    "function paused() external view returns (bool)",
 ]);
 
 export const MODE_TOKEN_ABI = parseAbi([
