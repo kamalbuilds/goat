@@ -12,12 +12,6 @@ import {
     GetBalanceParameters,
 } from "./parameters";
 
-type StakeInfo = [bigint, bigint, bigint]; // [stakedAmount, warmupEndTime, cooldownEndTime]
-type LockedInfo = {
-    amount: bigint;
-    start: bigint;
-};
-
 export class ModeGovernanceService {
     @Tool({
         description: "Stake MODE or BPT tokens in the Mode governance system. Requires MODE or BPT tokens to be approved first.",
@@ -36,7 +30,7 @@ export class ModeGovernanceService {
     }
 
     @Tool({
-        description: "Get staking information including warmup and cooldown periods",
+        description: "Get staking information including lock period and voting power",
     })
     async getStakeInfo(walletClient: EVMWalletClient, parameters: GetStakeInfoParameters) {
         const escrowAddress = parameters.tokenType === "MODE" ? MODE_VOTING_ESCROW : BPT_VOTING_ESCROW;
@@ -53,40 +47,43 @@ export class ModeGovernanceService {
             return {
                 stakedAmount: "0",
                 startTime: 0,
-                warmupEndTime: 0,
-                cooldownEndTime: 0,
+                votingPower: "0",
+                isVoting: false
             };
         }
 
+        const tokenId = tokenIds[0];
         const [amount, start] = (await walletClient.read({
             address: escrowAddress,
             abi: VOTING_ESCROW_ABI,
             functionName: "locked",
-            args: [tokenIds[0]],
+            args: [tokenId],
         })) as unknown as [bigint, bigint];
 
-        const warmupPeriod = await walletClient.read({
+        const votingPower = await walletClient.read({
             address: escrowAddress,
             abi: VOTING_ESCROW_ABI,
-            functionName: "getWarmupPeriod",
+            functionName: "votingPower",
+            args: [tokenId],
         }) as unknown as bigint;
 
-        const cooldownPeriod = await walletClient.read({
+        const isVoting = await walletClient.read({
             address: escrowAddress,
             abi: VOTING_ESCROW_ABI,
-            functionName: "getCooldownPeriod",
-        }) as unknown as bigint;
+            functionName: "isVoting",
+            args: [tokenId],
+        }) as unknown as boolean;
 
         return {
             stakedAmount: formatUnits(amount, 18),
             startTime: Number(start),
-            warmupEndTime: Number(warmupPeriod),
-            cooldownEndTime: Number(cooldownPeriod),
+            votingPower: formatUnits(votingPower, 18),
+            isVoting
         };
     }
 
     @Tool({
-        description: "Get the balance of MODE, BPT, veMode, or veBPT tokens for any address",
+        description: "Get the voting power for any address",
     })
     async getBalance(walletClient: EVMWalletClient, parameters: GetBalanceParameters) {
         const userAddress = parameters.address || await walletClient.getAddress();
@@ -96,14 +93,14 @@ export class ModeGovernanceService {
                 return formatUnits(await walletClient.read({
                     address: MODE_VOTING_ESCROW,
                     abi: VOTING_ESCROW_ABI,
-                    functionName: "balanceOf",
+                    functionName: "votingPowerForAccount",
                     args: [userAddress],
                 }) as unknown as bigint, 18);
             case "veBPT":
                 return formatUnits(await walletClient.read({
                     address: BPT_VOTING_ESCROW,
                     abi: VOTING_ESCROW_ABI,
-                    functionName: "balanceOf",
+                    functionName: "votingPowerForAccount",
                     args: [userAddress],
                 }) as unknown as bigint, 18);
             default:

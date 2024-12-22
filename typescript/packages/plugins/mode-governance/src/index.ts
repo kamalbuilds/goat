@@ -1,6 +1,5 @@
 import { Chain, PluginBase } from "@goat-sdk/core";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm";
-import { getTools } from "./tools";
 import { StakeParameters, GetStakeInfoParameters, GetBalanceParameters } from "./parameters";
 import { mode } from "viem/chains";
 import { ModeGovernanceService } from "./mode-governance.service";
