@@ -83,28 +83,30 @@ export class ModeGovernanceService {
     }
 
     @Tool({
-        description: "Get the Mode governance voting power for any address",
+        description: "Get the Mode governance voting power for any address. Use 'veMode' or 'veBPT' to check voting power.",
     })
     async get_mode_governance_voting_power(walletClient: EVMWalletClient, parameters: GetBalanceParameters) {
         const userAddress = parameters.address || await walletClient.getAddress();
         
         switch (parameters.tokenType) {
+            case "MODE":
             case "veMode":
-                return await walletClient.read({
+                return formatUnits((await walletClient.read({
                     address: MODE_VOTING_ESCROW,
                     abi: VOTING_ESCROW_ABI,
                     functionName: "votingPowerForAccount",
                     args: [userAddress],
-                });
+                }) as unknown) as bigint, 18);
+            case "BPT":
             case "veBPT":
-                return await walletClient.read({
+                return formatUnits((await walletClient.read({
                     address: BPT_VOTING_ESCROW,
                     abi: VOTING_ESCROW_ABI,
                     functionName: "votingPowerForAccount",
                     args: [userAddress],
-                });
+                }) as unknown) as bigint, 18);
             default:
-                throw new Error("Use ERC20 plugin to check MODE or BPT balances");
+                throw new Error("Invalid token type");
         }
     }
 } 
