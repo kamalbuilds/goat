@@ -1,6 +1,28 @@
 import { parseAbi } from "viem";
 
 export const VOTING_ESCROW_ABI = parseAbi([
+    // Errors
+    "error AlreadyVoted()",
+    "error AmountTooSmall()",
+    "error CannotExit()",
+    "error DaoUnauthorized(address dao, address where, address who, bytes32 permissionId)",
+    "error LockNFTAlreadySet()",
+    "error MustBe18Decimals()",
+    "error NoLockFound()",
+    "error NonExistentToken()",
+    "error NotApprovedOrOwner()",
+    "error NotOwner()",
+    "error NotTicketHolder()",
+    "error NotVoter()",
+    "error NothingToSweep()",
+    "error OwnershipChange()",
+    "error SameAddress()",
+    "error TransferBalanceIncorrect()",
+    "error ZeroAddress()",
+    "error ZeroAmount()",
+    "error ZeroBalance()",
+
+    // Functions
     "function createLock(uint256 _value) external returns (uint256)",
     "function createLockFor(uint256 _value, address _to) external returns (uint256)",
     "function withdraw(uint256 _tokenId) external",
