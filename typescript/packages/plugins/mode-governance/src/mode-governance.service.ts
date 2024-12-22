@@ -1,10 +1,8 @@
 import { Tool } from "@goat-sdk/core";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm";
 import { parseUnits, formatUnits } from "viem";
-import { VOTING_ESCROW_ABI, MODE_TOKEN_ABI, BPT_TOKEN_ABI } from "./abi";
+import { VOTING_ESCROW_ABI } from "./abi";
 import {
-    MODE_TOKEN_ADDRESS,
-    BPT_TOKEN_ADDRESS,
     MODE_VOTING_ESCROW,
     BPT_VOTING_ESCROW,
 } from "./constants";
@@ -13,6 +11,12 @@ import {
     GetStakeInfoParameters,
     GetBalanceParameters,
 } from "./parameters";
+
+type StakeInfo = [bigint, bigint, bigint]; // [stakedAmount, warmupEndTime, cooldownEndTime]
+type LockedInfo = {
+    amount: bigint;
+    start: bigint;
+};
 
 export class ModeGovernanceService {
     @Tool({
@@ -24,7 +28,7 @@ export class ModeGovernanceService {
         const stakeHash = await walletClient.sendTransaction({
             to: escrowAddress,
             abi: VOTING_ESCROW_ABI,
-            functionName: "stake",
+            functionName: "createLock",
             args: [parseUnits(parameters.amount, 18)],
         });
 
@@ -38,38 +42,53 @@ export class ModeGovernanceService {
         const escrowAddress = parameters.tokenType === "MODE" ? MODE_VOTING_ESCROW : BPT_VOTING_ESCROW;
         const userAddress = await walletClient.getAddress();
 
-        const stakeInfo = await walletClient.read({
+        const tokenIds = (await walletClient.read({
             address: escrowAddress,
             abi: VOTING_ESCROW_ABI,
-            functionName: "getUserStakeInfo",
+            functionName: "ownedTokens",
             args: [userAddress],
-        });
+        })) as unknown as bigint[];
+
+        if (tokenIds.length === 0) {
+            return {
+                stakedAmount: "0",
+                startTime: 0,
+                warmupEndTime: 0,
+                cooldownEndTime: 0,
+            };
+        }
+
+        const [amount, start] = (await walletClient.read({
+            address: escrowAddress,
+            abi: VOTING_ESCROW_ABI,
+            functionName: "locked",
+            args: [tokenIds[0]],
+        })) as unknown as [bigint, bigint];
 
         const warmupPeriod = await walletClient.read({
             address: escrowAddress,
             abi: VOTING_ESCROW_ABI,
             functionName: "getWarmupPeriod",
-        });
+        }) as unknown as bigint;
 
         const cooldownPeriod = await walletClient.read({
             address: escrowAddress,
             abi: VOTING_ESCROW_ABI,
             functionName: "getCooldownPeriod",
-        });
+        }) as unknown as bigint;
 
         return {
-            stakedAmount: formatUnits(stakeInfo[0], 18),
-            warmupEndTime: Number(stakeInfo[1]),
-            cooldownEndTime: Number(stakeInfo[2]),
-            warmupPeriod: Number(warmupPeriod),
-            cooldownPeriod: Number(cooldownPeriod),
+            stakedAmount: formatUnits(amount, 18),
+            startTime: Number(start),
+            warmupEndTime: Number(warmupPeriod),
+            cooldownEndTime: Number(cooldownPeriod),
         };
     }
 
     @Tool({
         description: "Get the balance of MODE, BPT, veMode, or veBPT tokens for any address",
     })
-    async getBalance(walletClient: EVMWalletClient, parameters: GetBalanceParameters & { address?: string }) {
+    async getBalance(walletClient: EVMWalletClient, parameters: GetBalanceParameters) {
         const userAddress = parameters.address || await walletClient.getAddress();
         
         switch (parameters.tokenType) {
@@ -79,16 +98,15 @@ export class ModeGovernanceService {
                     abi: VOTING_ESCROW_ABI,
                     functionName: "balanceOf",
                     args: [userAddress],
-                }), 18);
+                }) as unknown as bigint, 18);
             case "veBPT":
                 return formatUnits(await walletClient.read({
                     address: BPT_VOTING_ESCROW,
                     abi: VOTING_ESCROW_ABI,
                     functionName: "balanceOf",
                     args: [userAddress],
-                }), 18);
+                }) as unknown as bigint, 18);
             default:
-                // For MODE and BPT, we are using the ERC20 plugin instead as discussed in the PR 87
                 throw new Error("Use ERC20 plugin to check MODE or BPT balances");
         }
     }
