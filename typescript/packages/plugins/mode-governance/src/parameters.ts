@@ -21,8 +21,12 @@ const GetStakeInfoSchema = z.object({
 });
 
 const GetBalanceSchema = z.object({
-    tokenType: ExtendedTokenType.describe("The type of token to get balance for"),
-    address: z.string().optional().describe("The address to check balance for. If not provided, uses the wallet's address"),
+    tokenType: ExtendedTokenType.describe(
+        "The type of token to get balance for: 'veMode'/'veBPT' for voting power, 'MODE'/'BPT' for token balances"
+    ),
+    address: z.string()
+        .optional()
+        .describe("The address to check balance for. If not provided, uses the wallet's address"),
 });
 
 export class StakeParameters extends createToolParameters(StakeSchema) {}
