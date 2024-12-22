@@ -12,8 +12,8 @@ export type GetStakeInfoParametersType = z.infer<typeof GetStakeInfoSchema>;
 export type GetBalanceParametersType = z.infer<typeof GetBalanceSchema>;
 
 const StakeSchema = z.object({
-    amount: z.string().describe("The amount of tokens to stake"),
-    tokenType: TokenType.describe("The type of token to stake (MODE or BPT)"),
+    amount: z.string().describe("The amount of tokens to stake in base units (18 decimals)"),
+    tokenType: TokenType,
 });
 
 const GetStakeInfoSchema = z.object({

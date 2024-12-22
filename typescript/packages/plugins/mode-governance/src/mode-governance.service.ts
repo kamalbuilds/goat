@@ -16,7 +16,7 @@ export class ModeGovernanceService {
     @Tool({
         description: "Stake MODE or BPT tokens in the Mode governance system. Requires MODE or BPT tokens to be approved first.",
     })
-    async stakeTokens(walletClient: EVMWalletClient, parameters: StakeParameters) {
+    async stake_tokens_for_mode_governance(walletClient: EVMWalletClient, parameters: StakeParameters) {
         const escrowAddress = parameters.tokenType === "MODE" ? MODE_VOTING_ESCROW : BPT_VOTING_ESCROW;
         
         const stakeHash = await walletClient.sendTransaction({
@@ -30,9 +30,9 @@ export class ModeGovernanceService {
     }
 
     @Tool({
-        description: "Get staking information including lock period and voting power",
+        description: "Get Mode governance staking information including lock period and voting power",
     })
-    async getStakeInfo(walletClient: EVMWalletClient, parameters: GetStakeInfoParameters) {
+    async get_mode_governance_stake_info(walletClient: EVMWalletClient, parameters: GetStakeInfoParameters) {
         const escrowAddress = parameters.tokenType === "MODE" ? MODE_VOTING_ESCROW : BPT_VOTING_ESCROW;
         const userAddress = await walletClient.getAddress();
 
@@ -83,26 +83,26 @@ export class ModeGovernanceService {
     }
 
     @Tool({
-        description: "Get the voting power for any address",
+        description: "Get the Mode governance voting power for any address",
     })
-    async getBalance(walletClient: EVMWalletClient, parameters: GetBalanceParameters) {
+    async get_mode_governance_voting_power(walletClient: EVMWalletClient, parameters: GetBalanceParameters) {
         const userAddress = parameters.address || await walletClient.getAddress();
         
         switch (parameters.tokenType) {
             case "veMode":
-                return formatUnits(await walletClient.read({
+                return await walletClient.read({
                     address: MODE_VOTING_ESCROW,
                     abi: VOTING_ESCROW_ABI,
                     functionName: "votingPowerForAccount",
                     args: [userAddress],
-                }) as unknown as bigint, 18);
+                });
             case "veBPT":
-                return formatUnits(await walletClient.read({
+                return await walletClient.read({
                     address: BPT_VOTING_ESCROW,
                     abi: VOTING_ESCROW_ABI,
                     functionName: "votingPowerForAccount",
                     args: [userAddress],
-                }) as unknown as bigint, 18);
+                });
             default:
                 throw new Error("Use ERC20 plugin to check MODE or BPT balances");
         }
