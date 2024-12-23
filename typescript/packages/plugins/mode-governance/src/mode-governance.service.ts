@@ -16,7 +16,7 @@ export class ModeGovernanceService {
     @Tool({
         description: "Stake MODE or BPT tokens in the Mode governance system. Requires MODE or BPT tokens to be approved first.",
     })
-    async stake_tokens_for_mode_governance(walletClient: EVMWalletClient, parameters: StakeParameters) {
+    async stakeTokensForModeGovernance(walletClient: EVMWalletClient, parameters: StakeParameters) {
         const escrowAddress = parameters.tokenType === "MODE" ? MODE_VOTING_ESCROW : BPT_VOTING_ESCROW;
         
         const stakeHash = await walletClient.sendTransaction({
@@ -32,7 +32,7 @@ export class ModeGovernanceService {
     @Tool({
         description: "Get Mode governance staking information including lock period and voting power",
     })
-    async get_mode_governance_stake_info(walletClient: EVMWalletClient, parameters: GetStakeInfoParameters) {
+    async getModeGovernanceStakeInfo(walletClient: EVMWalletClient, parameters: GetStakeInfoParameters) {
         const escrowAddress = parameters.tokenType === "MODE" ? MODE_VOTING_ESCROW : BPT_VOTING_ESCROW;
         const userAddress = await walletClient.getAddress();
 
@@ -85,7 +85,7 @@ export class ModeGovernanceService {
     @Tool({
         description: "Get the Mode governance voting power for any address. Use 'veMode' or 'veBPT' to check voting power.",
     })
-    async get_mode_governance_voting_power(walletClient: EVMWalletClient, parameters: GetBalanceParameters) {
+    async getModeGovernanceVotingPower(walletClient: EVMWalletClient, parameters: GetBalanceParameters) {
         const userAddress = parameters.address || await walletClient.getAddress();
         
         switch (parameters.tokenType) {
