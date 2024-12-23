@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { Chain, Plugin, Tool, WalletClient } from "@goat-sdk/core";
 
 export const SwapParamsSchema = z.object({
   pool: z.string(),

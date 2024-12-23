@@ -1,41 +1,40 @@
 import { Tool } from "@goat-sdk/core";
 import type { EVMWalletClient } from "@goat-sdk/wallet-evm";
-import { BalancerApi, ChainId, Slippage, SwapKind, Token, Swap, AddLiquidity, AddLiquidityKind, TokenAmount } from "@balancer/sdk";
+import { BalancerApi, ChainId, Slippage, SwapKind, Token, Swap, AddLiquidity, AddLiquidityKind } from "@balancer/sdk";
 import { SwapParameters, LiquidityParameters } from "./parameters";
 
 export class BalancerService {
-    @Tool({
-        description: "Performs a token swap on Balancer using their Smart Order Router",
-    })
-    async swap(walletClient: EVMWalletClient, parameters: SwapParameters) {
-        const balancerApi = new BalancerApi(
-            "https://api-v3.balancer.fi/",
-            walletClient.getChain().id as ChainId
-        );
+    private getBalancerApi(chainId: ChainId) {
+        return new BalancerApi("https://api-v3.balancer.fi/", chainId);
+    }
 
-        const tokenInAddress = await walletClient.resolveAddress(parameters.tokenIn);
-        const tokenOutAddress = await walletClient.resolveAddress(parameters.tokenOut);
+    @Tool({
+        name: "swap_on_balancer",
+        description: "Swap a token on Balancer using Smart Order Router"
+    })
+    async swapOnBalancer(walletClient: EVMWalletClient, parameters: SwapParameters) {
+        const balancerApi = this.getBalancerApi(walletClient.getChain().id as ChainId);
 
         const tokenIn = new Token(
             walletClient.getChain().id as ChainId,
-            tokenInAddress,
-            18
+            parameters.tokenIn as `0x${string}`,
+            parameters.tokenInDecimals
         );
 
         const tokenOut = new Token(
             walletClient.getChain().id as ChainId,
-            tokenOutAddress,
-            18
+            parameters.tokenOut as `0x${string}`,
+            parameters.tokenOutDecimals
         );
 
-        const swapAmount : TokenAmount = {
+        const swapAmount = {
             amount: BigInt(parameters.amountIn),
         };
 
         const sorPaths = await balancerApi.sorSwapPaths.fetchSorSwapPaths({
             chainId: walletClient.getChain().id as ChainId,
-            tokenIn: tokenInAddress,
-            tokenOut: tokenOutAddress,
+            tokenIn: tokenIn.address,
+            tokenOut: tokenOut.address,
             swapKind: SwapKind.GivenIn,
             swapAmount,
         });
@@ -46,12 +45,7 @@ export class BalancerService {
             swapKind: SwapKind.GivenIn,
         });
 
-        const provider = await walletClient.read({
-            address: tokenInAddress,
-            abi: [],
-            functionName: ""
-        });
-
+        const provider = await walletClient.read;
         const updated = await swap.query(provider);
 
         const callData = swap.buildCall({
@@ -62,39 +56,40 @@ export class BalancerService {
         });
 
         const tx = await walletClient.sendTransaction({
-            to: callData.to as string,
-            value: callData.value
+            to: callData.to as `0x${string}`,
+            value: callData.value,
+            functionName: 'swap',
+            args: [callData.callData]
         });
 
-        return tx.hash;
+        return {
+            success: true,
+            data: {
+                amountOut: updated.expectedAmountOut.toString(),
+                txHash: tx.hash,
+            }
+        };
     }
 
     @Tool({
-        description: "Provides liquidity to a Balancer pool",
+        name: "add_liquidity_to_balancer",
+        description: "Add liquidity to a Balancer pool"
     })
     async addLiquidity(walletClient: EVMWalletClient, parameters: LiquidityParameters) {
-        const balancerApi = new BalancerApi(
-            "https://api-v3.balancer.fi/",
-            walletClient.getChain().id as ChainId
-        );
+        const balancerApi = this.getBalancerApi(walletClient.getChain().id as ChainId);
 
-        const poolAddress = await walletClient.resolveAddress(parameters.pool);
-        const poolState = await balancerApi.pools.fetchPoolState(poolAddress);
+        const poolState = await balancerApi.pools.fetchPoolState(parameters.pool as `0x${string}`);
 
-        const amountsIn = await Promise.all(parameters.amounts.map(async amount => ({
+        const amountsIn = parameters.amounts.map(amount => ({
             amount: BigInt(amount.amount),
             token: new Token(
                 walletClient.getChain().id as ChainId,
-                await walletClient.resolveAddress(amount.token),
+                amount.token as `0x${string}`,
                 amount.decimals
             )
-        })));
+        }));
 
-        const provider = await walletClient.read({
-            address: poolAddress,
-            abi: [],
-            functionName: ""
-        });
+        const provider = await walletClient.read;
 
         const addLiquidityInput = {
             amountsIn,
@@ -114,10 +109,18 @@ export class BalancerService {
         });
 
         const tx = await walletClient.sendTransaction({
-            to: call.to as string,
-            value: call.value
+            to: call.to as `0x${string}`,
+            value: call.value,
+            functionName: 'addLiquidity',
+            args: [call.callData]
         });
 
-        return tx.hash;
+        return {
+            success: true,
+            data: {
+                bptReceived: queryOutput.bptOut.toString(),
+                txHash: tx.hash,
+            }
+        };
     }
-} 
+}

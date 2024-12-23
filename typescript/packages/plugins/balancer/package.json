@@ -1,47 +1,31 @@
 {
   "name": "@goat-sdk/plugin-balancer",
   "version": "0.1.0",
-  "description": "Balancer plugin for GOAT SDK",
-  "files": [
-    "dist/**/*",
-    "README.md",
-    "package.json"
-  ],
-  "scripts": {
-    "build": "tsup",
-    "clean": "rm -rf dist",
-    "test": "vitest run --passWithNoTests"
-  },
-  "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/balancer.plugin.ts src/balancer.service.ts src/parameters.ts --format esm,cjs --dts",
+    "clean": "rm -rf dist",
+    "dev": "tsup src/index.ts --format esm,cjs --watch --dts",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
+    "@balancer/sdk": "^1.0.2",
     "@goat-sdk/core": "workspace:*",
     "@goat-sdk/wallet-evm": "workspace:*",
-    "@balancer/sdk": "catalog:",
-    "viem": "catalog:",
-    "zod": "catalog:"
+    "viem": "^2.7.8",
+    "zod": "^3.22.4"
   },
-  "peerDependencies": {
-    "@goat-sdk/core": "workspace:*",
-    "@balancer/sdk": "catalog:",
-    "viem": "catalog:"
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.3"
   },
-  "homepage": "https://ohmygoat.dev",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/goat-sdk/goat.git"
-  },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/goat-sdk/goat/issues"
-  },
-  "keywords": [
-    "ai",
-    "agents",
-    "web3",
-    "balancer",
-    "defi"
-  ]
+  "publishConfig": {
+    "access": "public"
+  }
 } 
