@@ -15,10 +15,10 @@ export interface IonicProtocolAddresses {
   export const ionicProtocolAddresses: {
     [chainId: number]: IonicProtocolAddresses;
   } = {
-    // Configuration for Mode network (chain ID 34443)
+    // Mode Chain
     34443: {
         pools: {
-            "1": "0xfb3323e24743caf4add0fdccfb268565c0685556", // Main Pool Address
+            "1": "0xfb3323e24743caf4add0fdccfb268565c0685556", // Main Pool Comptroller Address
         },
         assets: {
             "USDC": { address: "0x2BE717340023C9e14C1Bb12cb3ecBcfd3c3fB038", decimals: 6 },
@@ -30,13 +30,13 @@ export interface IonicProtocolAddresses {
             "weETH": { address: "0xA0D844742B4abbbc43d8931a6Edb00C56325aA18", decimals: 18 },
             "dMBTC": { address: "0x5158ae44C1351682B3DC046541Edf84BF28c8ca4", decimals: 8 },
         },
-        PoolDirectory: "0xBa47888839275e572435c8A1bA8A1Ca8822Bce23", // Mode PoolDirectory
+        PoolDirectory: "0x39C353Cf9041CcF467A04d0e78B63d961E81458a", // Mode PoolDirectory
         PoolLens: "0x41576595C989b4958b974117B3755547f94dd380",      // Mode PoolLens
     },
-    // Configuration for Base network (chain ID 8453)
+// Base Chain
     8453: {
         pools: {
-            "1": "0x05c9C6417F246600f8f5f49fcA9Ee991bfF73D13", // Base Main Pool
+            "1": "0x05c9C6417F246600f8f5f49fcA9Ee991bfF73D13",
         },
         assets: {
             "ezETH": { address: "0x079f84161642D81aaFb67966123C9949F9284bf5", decimals: 18 },
@@ -67,7 +67,7 @@ export interface IonicProtocolAddresses {
         PoolDirectory: "0x4b49784CB7fB959cA78c88a9487197fC0497739f", // Base PoolDirectory
         PoolLens: "0x4F8735782909162DC538f5c9278b498f5939879b",      // Base PoolLens
     },
-    // Configuration for Optimism network (chain ID 10)
+    // OP Chain
     10: {
         pools: {
             "1": "0xaFB4A254D125B0395610fdc8f1D022936c7b166B", // Optimism Main Pool

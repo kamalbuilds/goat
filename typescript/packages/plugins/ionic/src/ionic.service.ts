@@ -9,14 +9,11 @@ import { poolLensAbi } from "./abis/PoolLens";
 import { comptrollerAbi } from "./abis/Comptroller"; 
 import { poolAbi } from "./abis/Pool";
 import { poolDirectoryAbi } from "./abis/PoolDirectory";
+
 import {
   SupplyAssetParameters,
   BorrowAssetParameters,
-  GetHealthMetricsParameters,
-  GetPoolDataParameters,
-  GetPoolAssetsParameters,
-  GetPoolRatesParameters,
-  GetUserPositionParameters
+  GetHealthMetricsParameters
 } from "./parameters";
 
 export class IonicService {
@@ -36,22 +33,26 @@ export class IonicService {
 
   @Tool({
     name: "ionic_supply_asset",
-    description: "Supply an asset to an Ionic Protocol pool (amount in base units)"
+    description: "Supply an asset to an Ionic Protocol pool"
   })
   async supplyAsset(walletClient: EVMWalletClient, parameters: SupplyAssetParameters) {
     const { poolId, asset, amount } = parameters;
-    const chainId = walletClient.getChain();
-    const chainid = chainId.id;
-    const poolAddress = ionicProtocolAddresses[chainid]?.pools[poolId] as Address;
-
-    if (!poolAddress) {
-      throw new Error(`Pool with ID ${poolId} not found for chain ID ${chainId}`);
-    }
+    const chainId = walletClient.getChain().id;
 
     try {
-      const assetConfig = await this.getAssetConfig(chainid, asset);
+
+      const poolAddress = ionicProtocolAddresses[chainId]?.pools[poolId] as Address;
+      if (!poolAddress) {
+        throw new Error(`Pool address not found for pool ID ${poolId} on chain ${chainId}`);
+      }
+
+      console.log("poolAddress", poolAddress);
+
+      const assetConfig = await this.getAssetConfig(chainId, asset);
       const amountBigInt = parseUnits(amount, assetConfig.decimals);
 
+      
+      
       const tx = await walletClient.sendTransaction({
         to: poolAddress,
         abi: poolAbi,
@@ -71,50 +72,42 @@ export class IonicService {
   })
   async borrowAsset(walletClient: EVMWalletClient, parameters: BorrowAssetParameters) {
     const { poolId, asset, amount } = parameters;
+    const chainId = walletClient.getChain().id;
 
-    const poolLensContract = {
-      abi: poolLensAbi,
-      address: "POOL_LENS_ADDRESS" as Address
-    };
-
-    const assetConfig = poolData.assets.find(a => a.symbol === asset);
-    if (!assetConfig) {
-      throw new Error(`Asset ${asset} not found in pool ${poolId}`);
-    }
-
-    const chainid = walletClient.getChain().id;
-
-    const poolDirectoryAddress = ionicProtocolAddresses[chainid]?.PoolDirectory as Address;
-    if (!poolDirectoryAddress) {
+    try {
+      const poolDirectoryAddress = ionicProtocolAddresses[chainId]?.PoolDirectory as Address;
+      if (!poolDirectoryAddress) {
         throw new Error(`PoolDirectory address not found for chain ID ${chainId}`);
-    }
-    const poolDataRaw = await walletClient.read({
+      }
+
+      const poolDataRaw = await walletClient.read({
         address: poolDirectoryAddress,
         abi: poolDirectoryAbi,
         functionName: 'pools',
-        args: [BigInt(poolId)],
-    });
-    const poolData = poolDataRaw.value as [bigint, boolean, Address];
-    const comptrollerAddress = poolData[2];
-    if (!comptrollerAddress || comptrollerAddress === '0x0000000000000000000000000000000000000000') {
+        args: [BigInt(poolId)]
+      });
+
+      const poolData = poolDataRaw as unknown as [bigint, boolean, Address];
+      const comptrollerAddress = poolData[2];
+      
+      if (!comptrollerAddress || comptrollerAddress === '0x0000000000000000000000000000000000000000') {
         throw new Error(`Comptroller address not found for pool ID ${poolId}`);
+      }
+
+      const assetConfig = await this.getAssetConfig(chainId, asset);
+      const amountBigInt = parseUnits(amount, assetConfig.decimals);
+
+      const tx = await walletClient.sendTransaction({
+        to: comptrollerAddress,
+        abi: comptrollerAbi,
+        functionName: "borrow",
+        args: [assetConfig.address, amountBigInt]
+      });
+
+      return tx.hash;
+    } catch (error: any) {
+      throw new Error(`Failed to borrow asset: ${error.message}`);
     }
-
-    const comptrollerContract = {
-      abi: comptrollerAbi,
-      address: comptrollerAddress
-    };
-
-    const tx = await walletClient.sendTransaction({
-      to: comptrollerContract.address,
-      functionName: "borrow",
-      args: [assetConfig.address, amount],
-      abi: comptrollerAbi,
-    });
-
-   
-
-    return tx.hash;
   }
 
   @Tool({
@@ -125,21 +118,20 @@ export class IonicService {
     const { poolId } = parameters;
     const chainId = walletClient.getChain().id;
     
-    const poolLensAddress = ionicProtocolAddresses[chainId]?.PoolLens as Address;
-    if (!poolLensAddress) {
-      throw new Error(`PoolLens not found for chain ID ${chainId}`);
-    }
-
     try {
+      const poolLensAddress = ionicProtocolAddresses[chainId]?.PoolLens as Address;
+      if (!poolLensAddress) {
+        throw new Error(`PoolLens not found for chain ID ${chainId}`);
+      }
+
       const poolData = await walletClient.read({
         address: poolLensAddress,
         abi: poolLensAbi,
         functionName: "getPoolAssetsWithData",
         args: [BigInt(poolId)]
-      });
+      }) as unknown as PoolData;
 
       const assetPerformance: HealthMetrics['assetPerformance'] = {};
-
       let totalSuppliedUSD = 0n;
       let totalBorrowedUSD = 0n;
 
@@ -171,7 +163,7 @@ export class IonicService {
         assetPerformance
       };
     } catch (error: any) {
-      throw new Error(`Failed to get health metrics: ${error.message}`);
+      throw new Error(`Failed to get health metrics for pool ${poolId}: ${error.message}`);
     }
   }
 }
