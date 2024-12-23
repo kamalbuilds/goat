@@ -35,3 +35,17 @@ export interface BorrowPosition {
   apy: number;
   collateral: boolean;
 } 
+
+export interface PoolAsset {
+  symbol: string;
+  decimals: number;
+  totalSupply: bigint;
+  totalSupplyUSD: bigint;
+  totalBorrowUSD: bigint;
+  supplyAPY: bigint;
+  utilization: bigint;
+}
+
+export interface PoolData {
+  assets: PoolAsset[];
+} 
