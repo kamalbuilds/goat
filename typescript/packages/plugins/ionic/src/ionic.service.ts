@@ -6,8 +6,18 @@ import type { HealthMetrics } from "./types";
 
 import { poolLensAbi } from "./abis/PoolLens";
 import { comptrollerAbi } from "./abis/Comptroller"; 
-import erc20Abi  from "./abis/ERC20";
+import erc20Abi from "./abis/ERC20";
 import { ionicAddress } from "./address";
+
+import {
+  SupplyAssetParameters,
+  BorrowAssetParameters,
+  GetHealthMetricsParameters,
+  GetPoolDataParameters,
+  GetPoolAssetsParameters,
+  GetPoolRatesParameters,
+  GetUserPositionParameters
+} from "./parameters";
 
 export class IonicService {
   private supportedTokens: string[];
@@ -18,9 +28,9 @@ export class IonicService {
 
   @Tool({
     name: "ionic_supply_asset",
-    description: "Supply an asset to an Ionic Protocol pool (amount in base units) requires poolId, asset, and amount",
+    description: "Supply an asset to an Ionic Protocol pool (amount in base units)"
   })
-  async supplyAsset(walletClient: EVMWalletClient, parameters: z.infer<typeof parameters>) {
+  async supplyAsset(walletClient: EVMWalletClient, parameters: SupplyAssetParameters) {
     const { poolId, asset, amount } = parameters;
 
     // Get pool data from PoolLens contract
@@ -59,13 +69,8 @@ export class IonicService {
   }
 
   @Tool({
-    name: "ionic_borrow_asset", 
-    description: "Borrow an asset from an Ionic Protocol pool (amount in base units) requires poolId, asset, and amount",
-    parameters: z.object({
-      poolId: z.string().describe("The ID of the pool to borrow from"),
-      asset: z.string().describe("The asset to borrow"),
-      amount: z.string().describe("The amount to borrow in base units"),
-    }),
+    name: "ionic_borrow_asset",
+    description: "Borrow an asset from an Ionic Protocol pool (amount in base units)"
   })
   async borrowAsset(walletClient: EVMWalletClient, parameters: BorrowAssetParameters) {
     const { poolId, asset, amount } = parameters;
@@ -106,9 +111,9 @@ export class IonicService {
 
   @Tool({
     name: "get_ionic_health_metrics",
-    description: "Get health metrics for an Ionic Protocol pool position requires poolId to check the metrics for",
+    description: "Get health metrics for an Ionic Protocol pool position"
   })
-  async getHealthMetrics(walletClient: EVMWalletClient, parameters: z.infer<typeof parameters>): Promise<HealthMetrics> {
+  async getHealthMetrics(walletClient: EVMWalletClient, parameters: GetHealthMetricsParameters): Promise<HealthMetrics> {
     const { poolId } = parameters;
 
     const poolLensContract = {
