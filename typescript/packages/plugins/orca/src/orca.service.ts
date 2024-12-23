@@ -5,6 +5,7 @@ import { Percentage, TransactionBuilder, resolveOrCreateATAs } from "@orca-so/co
 import {
     IncreaseLiquidityQuoteParam,
     NO_TOKEN_EXTENSION_CONTEXT,
+    ORCA_WHIRLPOOLS_CONFIG,
     ORCA_WHIRLPOOL_PROGRAM_ID,
     PDAUtil,
     PoolUtil,
@@ -12,7 +13,6 @@ import {
     TickUtil,
     TokenExtensionContextForPool,
     TokenExtensionUtil,
-    //   ORCA_WHIRLPOOLS_CONFIG,
     WhirlpoolContext,
     WhirlpoolIx,
     increaseLiquidityQuoteByInputTokenWithParams,
@@ -39,8 +39,6 @@ export const FEE_TIERS = {
     1.0: 128,
     2.0: 256,
 } as const;
-
-const ORCA_WHIRLPOOLS_CONFIG = new PublicKey("FcrweFY1G9HJAHG5inkGB6pKg1HZ6x9UC2WioAfWrGkR");
 
 export class OrcaService {
     @Tool({

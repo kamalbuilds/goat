@@ -1,24 +1,21 @@
 {
-    "name": "goat-examples-vercel-ai-chromia",
-    "version": "0.2.2",
+    "name": "goat-examples-vercel-ai-fuel",
+    "version": "0.1.0",
     "description": "",
     "private": true,
     "scripts": {
+        "send-eth": "ts-node index.ts",
         "test": "vitest run --passWithNoTests"
     },
     "author": "",
     "license": "MIT",
     "dependencies": {
         "@ai-sdk/openai": "^1.0.4",
-        "@chromia/ft4": "catalog:",
         "@goat-sdk/adapter-vercel-ai": "workspace:*",
         "@goat-sdk/core": "workspace:*",
-        "@goat-sdk/wallet-chromia": "workspace:*",
-        "@langchain/langgraph": "^0.2.0",
+        "@goat-sdk/wallet-fuel": "workspace:*",
+        "fuels": "0.97.2",
         "ai": "catalog:",
-        "chalk": "5.3.0",
-        "dotenv": "^16.4.5",
-        "postchain-client": "catalog:",
-        "zod": "^3.24.1"
+        "dotenv": "^16.4.5"
     }
 }
