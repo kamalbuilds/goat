@@ -454,7 +454,7 @@ importers:
     dependencies:
       '@ai-sdk/openai':
         specifier: ^1.0.4
-        version: 1.0.5(zod@3.24.1)
+        version: 1.0.11(zod@3.24.1)
       '@goat-sdk/adapter-vercel-ai':
         specifier: workspace:*
         version: link:../../../packages/adapters/vercel-ai
@@ -479,45 +479,6 @@ importers:
       '@ai-sdk/openai':
         specifier: ^1.0.4
         version: 1.0.5(zod@3.24.1)
-      '@goat-sdk/adapter-vercel-ai':
-        specifier: workspace:*
-        version: link:../../../packages/adapters/vercel-ai
-      '@goat-sdk/core':
-        specifier: workspace:*
-        version: link:../../../packages/core
-      '@goat-sdk/plugin-erc20':
-        specifier: workspace:*
-        version: link:../../../packages/plugins/erc20
-      '@goat-sdk/plugin-erc721':
-        specifier: workspace:*
-        version: link:../../../packages/plugins/erc721
-      '@goat-sdk/plugin-kim':
-        specifier: workspace:*
-        version: link:../../../packages/plugins/kim
-      '@goat-sdk/wallet-evm':
-        specifier: workspace:*
-        version: link:../../../packages/wallets/evm
-      '@goat-sdk/wallet-viem':
-        specifier: workspace:*
-        version: link:../../../packages/wallets/viem
-      ai:
-        specifier: 'catalog:'
-        version: 4.0.3(react@19.0.0-rc-66855b96-20241106)(zod@3.24.1)
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.4.5
-      viem:
-        specifier: 2.21.49
-        version: 2.21.49(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.1)
-
-  examples/vercel-ai/mode-staking:
-    dependencies:
-      '@ai-sdk/openai':
-        specifier: ^1.0.4
-        version: 1.0.5(zod@3.24.1)
-      '@ai-sdk/xai':
-        specifier: 1.0.12
-        version: 1.0.12(zod@3.24.1)
       '@goat-sdk/adapter-vercel-ai':
         specifier: workspace:*
         version: link:../../../packages/adapters/vercel-ai
@@ -1351,12 +1312,6 @@ packages:
     peerDependenciesMeta:
       vue:
         optional: true
-
-  '@ai-sdk/xai@1.0.12':
-    resolution: {integrity: sha512-hGjmSH3WZ0i2JU+0QDfSF4a4M7xBG5FGvspxawW+Fi2K2/hV1PVxX8+fggp2+XykOMdSBSi31hk80rcK8Fd/aQ==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      zod: ^3.0.0
 
   '@ai16z/eliza@0.1.5-alpha.5':
     resolution: {integrity: sha512-08EFPlfhE1p5IsacR0Kh2MZOBxKnOoWTE4vZ9cz3V9f/Ka0760p5sNzna4pfKlXUFBZlKfWDnbTXEDcjNOc20Q==}
@@ -9358,7 +9313,6 @@ snapshots:
       '@ai-sdk/provider-utils': 1.0.22(zod@3.23.8)
       zod: 3.23.8
 
-
   '@ai-sdk/openai@1.0.11(zod@3.24.1)':
     dependencies:
       '@ai-sdk/provider': 1.0.3
@@ -9390,7 +9344,7 @@ snapshots:
     dependencies:
       '@ai-sdk/provider': 0.0.26
       eventsource-parser: 1.1.2
-      nanoid: 3.3.7
+      nanoid: 3.3.8
       secure-json-parse: 2.7.0
     optionalDependencies:
       zod: 3.23.8
@@ -9407,15 +9361,6 @@ snapshots:
   '@ai-sdk/provider-utils@2.0.2(zod@3.24.1)':
     dependencies:
       '@ai-sdk/provider': 1.0.1
-      eventsource-parser: 3.0.0
-      nanoid: 3.3.8
-      secure-json-parse: 2.7.0
-    optionalDependencies:
-      zod: 3.24.1
-
-  '@ai-sdk/provider-utils@2.0.5(zod@3.24.1)':
-    dependencies:
-      '@ai-sdk/provider': 1.0.3
       eventsource-parser: 3.0.0
       nanoid: 3.3.8
       secure-json-parse: 2.7.0
