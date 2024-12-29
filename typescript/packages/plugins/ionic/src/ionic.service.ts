@@ -40,19 +40,30 @@ export class IonicService {
     const chainId = walletClient.getChain().id;
 
     try {
-
       const poolAddress = ionicProtocolAddresses[chainId]?.pools[poolId] as Address;
       if (!poolAddress) {
         throw new Error(`Pool address not found for pool ID ${poolId} on chain ${chainId}`);
       }
 
-      console.log("poolAddress", poolAddress);
+      if (!this.supportedTokens.includes(asset)) {
+        throw new Error(`Asset ${asset} is not supported. Supported assets: ${this.supportedTokens.join(', ')}`);
+      }
 
       const assetConfig = await this.getAssetConfig(chainId, asset);
-      const amountBigInt = parseUnits(amount, assetConfig.decimals);
+
+      const amountBigInt = BigInt(amount);
+
+      const assets = await walletClient.read({
+        address: poolAddress,
+        abi: poolAbi,
+        functionName: "getAssets"
+      });
 
       
-      
+      if (!assets.find(assetConfig.address)) {
+        throw new Error(`Asset ${asset} is not supported by pool ${poolId}`);
+      }
+
       const tx = await walletClient.sendTransaction({
         to: poolAddress,
         abi: poolAbi,
@@ -68,39 +79,40 @@ export class IonicService {
 
   @Tool({
     name: "ionic_borrow_asset",
-    description: "Borrow an asset from an Ionic Protocol pool (amount in base units)"
+    description: "Borrow an asset from an Ionic Protocol pool"
   })
   async borrowAsset(walletClient: EVMWalletClient, parameters: BorrowAssetParameters) {
     const { poolId, asset, amount } = parameters;
     const chainId = walletClient.getChain().id;
 
     try {
-      const poolDirectoryAddress = ionicProtocolAddresses[chainId]?.PoolDirectory as Address;
-      if (!poolDirectoryAddress) {
-        throw new Error(`PoolDirectory address not found for chain ID ${chainId}`);
-      }
-
-      const poolDataRaw = await walletClient.read({
-        address: poolDirectoryAddress,
-        abi: poolDirectoryAbi,
-        functionName: 'pools',
-        args: [BigInt(poolId)]
-      });
-
-      const poolData = poolDataRaw as unknown as [bigint, boolean, Address];
-      const comptrollerAddress = poolData[2];
-      
-      if (!comptrollerAddress || comptrollerAddress === '0x0000000000000000000000000000000000000000') {
-        throw new Error(`Comptroller address not found for pool ID ${poolId}`);
+      const poolAddress = ionicProtocolAddresses[chainId]?.pools[poolId] as Address;
+      if (!poolAddress) {
+        throw new Error(`Pool address not found for pool ID ${poolId} on chain ${chainId}`);
       }
 
       const assetConfig = await this.getAssetConfig(chainId, asset);
-      const amountBigInt = parseUnits(amount, assetConfig.decimals);
+      const amountBigInt = BigInt(amount);
 
-      const tx = await walletClient.sendTransaction({
+      const poolDataRaw = await walletClient.read({
+        address: poolAddress,
+        abi: poolAbi, 
+        functionName: 'comptroller'
+      });
+
+      const comptrollerAddress = poolDataRaw as Address;
+      
+      await walletClient.sendTransaction({
         to: comptrollerAddress,
         abi: comptrollerAbi,
-        functionName: "borrow",
+        functionName: "enterMarkets",
+        args: [[assetConfig.address]]
+      });
+
+      const tx = await walletClient.sendTransaction({
+        to: poolAddress,
+        abi: poolAbi,
+        functionName: "borrow", 
         args: [assetConfig.address, amountBigInt]
       });
 
