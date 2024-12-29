@@ -11,7 +11,6 @@ export class SupplyAssetParameters extends createToolParameters(
 
 export class BorrowAssetParameters extends createToolParameters(
   z.object({
-    poolId: z.string().describe("The ID of the pool to borrow from"),
     asset: z.string().describe("The asset to borrow (e.g. USDC, WETH)"),
     amount: z.string().describe("The amount to borrow in base units")
   })

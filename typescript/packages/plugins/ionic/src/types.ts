@@ -1,13 +1,7 @@
 export interface HealthMetrics {
-  ltv: number;
-  liquidationRisk: "LOW" | "MEDIUM" | "HIGH";
-  assetPerformance: {
-    [asset: string]: {
-      apy: number;
-      tvl: number;
-      utilization: number;
-    };
-  };
+  totalBorrows: string;
+  totalCollateral: string;
+  healthFactor: string;
 }
 
 export interface LoopingConfig {

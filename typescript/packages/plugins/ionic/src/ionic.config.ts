@@ -10,6 +10,7 @@ export interface IonicProtocolAddresses {
     };
     PoolDirectory?: `0x${string}`;
     PoolLens?: `0x${string}`;
+    Comptroller?: `0x${string}`;
   }
   
   export const ionicProtocolAddresses: {
@@ -31,7 +32,8 @@ export interface IonicProtocolAddresses {
             "iondMBTC": { address: "0x5158ae44C1351682B3DC046541Edf84BF28c8ca4", decimals: 18 },
         },
         PoolDirectory: "0x39C353Cf9041CcF467A04d0e78B63d961E81458a", // Mode PoolDirectory
-        PoolLens: "0x70BB19a56BfAEc65aE861E6275A90163AbDF36a6",      // Mode PoolLens
+        PoolLens: "0x70BB19a56BfAEc65aE861E6275A90163AbDF36a6",
+        Comptroller: "0xa855F8697D82F840c511433A36f7c60efF6c6BE7"     // Mode PoolLens
     },
 // Base Chain
     8453: {
