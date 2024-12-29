@@ -28,7 +28,7 @@ export interface IonicProtocolAddresses {
             "ionSTONE": { address: "0x959FA710CCBb22c7Ce1e59Da82A247e686629310", decimals: 18 },
             "ionWrsETH": { address: "0x49950319aBE7CE5c3A6C90698381b45989C99b46", decimals: 18 },
             "ionWeETH": { address: "0xA0D844742B4abbbc43d8931a6Edb00C56325aA18", decimals: 18 },
-            "ionDMBTC": { address: "0x5158ae44C1351682B3DC046541Edf84BF28c8ca4", decimals: 8 },
+            "iondMBTC": { address: "0x5158ae44C1351682B3DC046541Edf84BF28c8ca4", decimals: 18 },
         },
         PoolDirectory: "0x39C353Cf9041CcF467A04d0e78B63d961E81458a", // Mode PoolDirectory
         PoolLens: "0x70BB19a56BfAEc65aE861E6275A90163AbDF36a6",      // Mode PoolLens
@@ -59,10 +59,10 @@ export interface IonicProtocolAddresses {
             "ionUSDz": { address: "0xa4442b665d4c6DBC6ea43137B336e3089f05626C", decimals: 18 },
             "ionWUSDPlus": { address: "0xF1bbECD6aCF648540eb79588Df692c6b2F0fbc09", decimals: 18 },
             "ionSUSDz": { address: "0xf64bfd19DdCB2Bb54e6f976a233d0A9400ed84eA", decimals: 18 },
-            "ionUSOL": { address: "0xbd06905590b6E1b6Ac979Fc477A0AebB58d52371", decimals: 9 },
-            "ionUSUI": { address: "0xAa255Cf8e294BD7fcAB21897C0791e50C99BAc69", decimals: 6 },
+            "ionUSOL": { address: "0xbd06905590b6E1b6Ac979Fc477A0AebB58d52371", decimals: 18 },
+            "ionUSUI": { address: "0xAa255Cf8e294BD7fcAB21897C0791e50C99BAc69", decimals: 18 },
             "ionFBOMB": { address: "0xd333681242F376f9005d1208ff946C3EE73eD659", decimals: 18 },
-            "ionKLIMA": { address: "0x600D660440f15EeADbC3fc1403375e04b318F07e", decimals: 18 },
+            "ionKLIMA": { address: "0x600D660440f15EeADbC3fc1403375e04b318F07e", decimals: 9 },
         },
         PoolDirectory: "0xE1A3006be645a80F206311d9f18C866c204bA02f", // Base PoolDirectory
         PoolLens: "0x6ec80f9aCd960b568932696C0F0bE06FBfCd175a",      // Base PoolLens
