@@ -31,7 +31,7 @@ export interface IonicProtocolAddresses {
             "ionDMBTC": { address: "0x5158ae44C1351682B3DC046541Edf84BF28c8ca4", decimals: 8 },
         },
         PoolDirectory: "0x39C353Cf9041CcF467A04d0e78B63d961E81458a", // Mode PoolDirectory
-        PoolLens: "0x41576595C989b4958b974117B3755547f94dd380",      // Mode PoolLens
+        PoolLens: "0x70BB19a56BfAEc65aE861E6275A90163AbDF36a6",      // Mode PoolLens
     },
 // Base Chain
     8453: {
@@ -64,8 +64,8 @@ export interface IonicProtocolAddresses {
             "ionFBOMB": { address: "0xd333681242F376f9005d1208ff946C3EE73eD659", decimals: 18 },
             "ionKLIMA": { address: "0x600D660440f15EeADbC3fc1403375e04b318F07e", decimals: 18 },
         },
-        PoolDirectory: "0x4b49784CB7fB959cA78c88a9487197fC0497739f", // Base PoolDirectory
-        PoolLens: "0x4F8735782909162DC538f5c9278b498f5939879b",      // Base PoolLens
+        PoolDirectory: "0xE1A3006be645a80F206311d9f18C866c204bA02f", // Base PoolDirectory
+        PoolLens: "0x6ec80f9aCd960b568932696C0F0bE06FBfCd175a",      // Base PoolLens
     },
     // OP Chain
     10: {
@@ -84,7 +84,7 @@ export interface IonicProtocolAddresses {
             "ionUSDM": { address: "0xc63B18Fc9025ACC7830B9df05e5A0B208940a3EE", decimals: 18 },
             "ionWeETH": { address: "0xC741af01903f39841228dE21d9DdD31Ba604Fec5", decimals: 18 },
         },
-        PoolDirectory: "0x3f270120D901081C093c5180456146E088b1dCe1", // Optimism PoolDirectory
-        PoolLens: "0x3F91140971473b1c875378cb159e53ca42b062C9",      // Optimism PoolLens
+        PoolDirectory: "0xBbDcA7858ac2417b06636F7BA35e7d9EA39402ea", // Optimism PoolDirectory
+        PoolLens: "0x9c9CB0C521b05b368A11BC3B2AB6adb870D05f87",      // Optimism PoolLens
     },
   };
