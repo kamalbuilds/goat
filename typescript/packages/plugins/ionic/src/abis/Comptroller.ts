@@ -1,87 +1,87 @@
 export const comptrollerAbi = [
     {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
+        inputs: [],
+        stateMutability: "nonpayable",
+        type: "constructor",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address[]",
-                "name": "markets",
-                "type": "address[]"
-            }
+                internalType: "address[]",
+                name: "markets",
+                type: "address[]",
+            },
         ],
-        "name": "enterMarkets",
-        "outputs": [
+        name: "enterMarkets",
+        outputs: [
             {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-            }
+                internalType: "uint256[]",
+                name: "",
+                type: "uint256[]",
+            },
         ],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        stateMutability: "nonpayable",
+        type: "function",
     },
     {
-        "inputs": [],
-        "name": "getAssets",
-        "outputs": [
+        inputs: [],
+        name: "getAssets",
+        outputs: [
             {
-                "internalType": "address[]",
-                "name": "",
-                "type": "address[]"
-            }
+                internalType: "address[]",
+                name: "",
+                type: "address[]",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
+        stateMutability: "view",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "market",
-                "type": "address"
-            }
+                internalType: "address",
+                name: "market",
+                type: "address",
+            },
         ],
-        "name": "exitMarket",
-        "outputs": [
+        name: "exitMarket",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        stateMutability: "nonpayable",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
+                internalType: "address",
+                name: "account",
+                type: "address",
+            },
         ],
-        "name": "getAccountLiquidity",
-        "outputs": [
+        name: "getAccountLiquidity",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
-    }
-] as const; 
+        stateMutability: "view",
+        type: "function",
+    },
+] as const;
