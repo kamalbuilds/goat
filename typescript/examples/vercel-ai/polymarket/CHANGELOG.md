@@ -1,5 +1,69 @@
 # goat-examples-vercel-ai-polymarket
 
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies [b9af25b]
+  - @goat-sdk/core@0.4.5
+  - @goat-sdk/adapter-vercel-ai@0.2.6
+  - @goat-sdk/plugin-polymarket@0.3.7
+  - @goat-sdk/wallet-viem@0.2.5
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [50180d4]
+  - @goat-sdk/core@0.4.4
+  - @goat-sdk/adapter-vercel-ai@0.2.5
+  - @goat-sdk/plugin-polymarket@0.3.6
+  - @goat-sdk/wallet-viem@0.2.4
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [1906022]
+  - @goat-sdk/adapter-vercel-ai@0.2.4
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [778440b]
+  - @goat-sdk/core@0.4.3
+  - @goat-sdk/adapter-vercel-ai@0.2.3
+  - @goat-sdk/plugin-polymarket@0.3.5
+  - @goat-sdk/wallet-viem@0.2.3
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [279dfcd]
+  - @goat-sdk/core@0.4.2
+  - @goat-sdk/adapter-vercel-ai@0.2.2
+  - @goat-sdk/plugin-polymarket@0.3.4
+  - @goat-sdk/wallet-viem@0.2.2
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [6c03f61]
+  - @goat-sdk/core@0.4.1
+  - @goat-sdk/adapter-vercel-ai@0.2.1
+  - @goat-sdk/plugin-polymarket@0.3.3
+  - @goat-sdk/wallet-viem@0.2.1
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [1bc1d42]
+  - @goat-sdk/plugin-polymarket@0.3.2
+
 ## 0.2.1
 
 ### Patch Changes

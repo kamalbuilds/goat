@@ -1,5 +1,46 @@
 # @goat-sdk/wallet-solana
 
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies [b9af25b]
+  - @goat-sdk/core@0.4.5
+
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies [50180d4]
+  - @goat-sdk/core@0.4.4
+
+## 0.2.8
+
+### Patch Changes
+
+- 87eed18: Support pump.fun plugin
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [778440b]
+  - @goat-sdk/core@0.4.3
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [279dfcd]
+  - @goat-sdk/core@0.4.2
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [6c03f61]
+  - @goat-sdk/core@0.4.1
+
 ## 0.2.4
 
 ### Patch Changes
