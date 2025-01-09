@@ -29,7 +29,7 @@ export const ionicProtocolAddresses: {
         PoolDirectory: "0x39C353Cf9041CcF467A04d0e78B63d961E81458a", // Mode PoolDirectory
         PoolLens: "0x70BB19a56BfAEc65aE861E6275A90163AbDF36a6", // Mode PoolLens
         Comptroller: "0xfb3323e24743caf4add0fdccfb268565c0685556",
-        PriceOracle: "0x2BAF3A2B667A5027a83101d218A9e8B73577F117"
+        PriceOracle: "0x2BAF3A2B667A5027a83101d218A9e8B73577F117",
     },
     // Base Chain
     8453: {
@@ -62,7 +62,7 @@ export const ionicProtocolAddresses: {
         PoolDirectory: "0xE1A3006be645a80F206311d9f18C866c204bA02f", // Base PoolDirectory
         PoolLens: "0x6ec80f9aCd960b568932696C0F0bE06FBfCd175a", // Base PoolLens
         Comptroller: "0x05c9C6417F246600f8f5f49fcA9Ee991bfF73D13",
-        PriceOracle: "0x0Dc808adcE2099A9F62AA87D9670745AbA741746"
+        PriceOracle: "0x0Dc808adcE2099A9F62AA87D9670745AbA741746",
     },
     // OP Chain
     10: {
@@ -81,6 +81,6 @@ export const ionicProtocolAddresses: {
         PoolDirectory: "0xBbDcA7858ac2417b06636F7BA35e7d9EA39402ea", // Optimism PoolDirectory
         PoolLens: "0x9c9CB0C521b05b368A11BC3B2AB6adb870D05f87", // Optimism PoolLens
         Comptroller: "0xaFB4A254D125B0395610fdc8f1D022936c7b166B",
-        PriceOracle: "0x4d6D585eE00B1DF3F4c16075fE2489566AE3eBc9"
+        PriceOracle: "0x4d6D585eE00B1DF3F4c16075fE2489566AE3eBc9",
     },
 };

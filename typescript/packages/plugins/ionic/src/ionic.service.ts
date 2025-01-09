@@ -2,17 +2,23 @@ import { Tool } from "@goat-sdk/core";
 import { EVMTransactionOptions, EVMWalletClient } from "@goat-sdk/wallet-evm";
 import { type Address, erc20Abi, formatUnits, parseUnits } from "viem";
 import { bigint, z } from "zod";
+import { cerc20DelegatorAbi } from "./abis";
 import { ComptrollerProxyAbi } from "./abis/ComptrollerProxyAbi";
 import { poolAbi } from "./abis/Pool";
 import { poolLensAbi } from "./abis/PoolLens";
 import { ionicProtocolAddresses } from "./ionic.config";
-import { BorrowAssetParameters, GetHealthMetricsParameters, LoopAssetParameters, SupplyAssetParameters, SwapCollateralParameters } from "./parameters";
+import {
+    BorrowAssetParameters,
+    GetHealthMetricsParameters,
+    LoopAssetParameters,
+    SupplyAssetParameters,
+    SwapCollateralParameters,
+} from "./parameters";
 import type { HealthMetrics } from "./types";
-import { cerc20DelegatorAbi } from "./abis";
 
 export class IonicService {
     private supportedTokens: string[];
-    private loopableTokens = ['weETH', 'dMBTC', 'wrsETH', 'ezETH', 'STONE'];
+    private loopableTokens = ["weETH", "dMBTC", "wrsETH", "ezETH", "STONE"];
 
     constructor(supportedTokens?: string[]) {
         this.supportedTokens = supportedTokens || Object.keys(ionicProtocolAddresses[34443].assets);
@@ -93,10 +99,9 @@ export class IonicService {
         return txn.hash;
     }
 
-
     @Tool({
         name: "ionic_get_health_metrics",
-        description: "Get health metrics for an Ionic Protocol position including LTV and liquidation risk"
+        description: "Get health metrics for an Ionic Protocol position including LTV and liquidation risk",
     })
     async getHealthMetrics(wallet: EVMWalletClient, params: GetHealthMetricsParameters): Promise<HealthMetrics> {
         try {
@@ -112,10 +117,10 @@ export class IonicService {
                 address: comptrollerAddress,
                 abi: ComptrollerProxyAbi,
                 functionName: "getAccountLiquidity",
-                args: [userAddress]
+                args: [userAddress],
             });
 
-            const accountLiquidity = (result as { value: [bigint , bigint, bigint, bigint] }).value;
+            const accountLiquidity = (result as { value: [bigint, bigint, bigint, bigint] }).value;
 
             const [errorCode, collateralValue, liquidity, shortfall] = accountLiquidity;
 
@@ -125,19 +130,18 @@ export class IonicService {
 
             // Calculate health factor using BigInt arithmetic
             let healthFactor = "∞"; // Default value when there's no borrow
-            if (collateralValue > 0n && (collateralValue - liquidity) > 0n) {
+            if (collateralValue > 0n && collateralValue - liquidity > 0n) {
                 // Convert to number after calculation to avoid precision loss
                 const healthFactorBig = (collateralValue * 10000n) / (collateralValue - liquidity);
                 healthFactor = (Number(healthFactorBig) / 10000).toString();
             }
-
 
             // Get all markets user is in
             const assetsResult = await wallet.read({
                 address: comptrollerAddress,
                 abi: ComptrollerProxyAbi,
                 functionName: "getAssetsIn",
-                args: [userAddress]
+                args: [userAddress],
             });
             const assets = (assetsResult as { value: Address[] }).value;
 
@@ -149,7 +153,7 @@ export class IonicService {
                     address: asset,
                     abi: cerc20DelegatorAbi,
                     functionName: "balanceOf",
-                    args: [userAddress]
+                    args: [userAddress],
                 });
                 const supplyBalance = (supplyBalanceResult as { value: bigint }).value;
 
@@ -167,7 +171,7 @@ export class IonicService {
                     address: asset,
                     abi: cerc20DelegatorAbi,
                     functionName: "borrowBalanceCurrent",
-                    args: [userAddress]
+                    args: [userAddress],
                 });
 
                 const borrowBalance = (borrowBalanceResult as { value: bigint }).value;
@@ -179,7 +183,6 @@ export class IonicService {
                 // Convert back to BigInt with proper scaling
                 totalSuppliedUSD += SuppliedUSD !== 0 ? BigInt(Math.floor(SuppliedUSD * 1e18)) : 0n;
                 totalBorrowedUSD += BorrowedUSD !== 0 ? BigInt(Math.floor(BorrowedUSD * 1e18)) : 0n;
-
             }
 
             // Calculate LTV using BigInt arithmetic
@@ -195,7 +198,7 @@ export class IonicService {
                 ltv: ltvString,
                 liquidity: formatUnits(liquidity, 18),
                 shortfall: formatUnits(shortfall, 18),
-                healthFactor: healthFactor
+                healthFactor: healthFactor,
             };
         } catch (error) {
             console.error("Health metrics error:", error);
@@ -205,14 +208,14 @@ export class IonicService {
 
     @Tool({
         name: "ionic_loop_asset",
-        description: "Loop (leverage) an asset position in Ionic Protocol"
+        description: "Loop (leverage) an asset position in Ionic Protocol",
     })
     async loopAsset(wallet: EVMWalletClient, params: LoopAssetParameters): Promise<string> {
         try {
             const { asset, initialAmount, targetltv, maxIterations } = params;
             const chain = await wallet.getChain();
             const { address: assetAddress } = await this.getAssetConfig(chain.id, asset);
-            
+
             // Get Comptroller contract
             const comptrollerAddress = ionicProtocolAddresses[chain.id]?.Comptroller;
             if (!comptrollerAddress) throw new Error("Comptroller not found");
@@ -222,18 +225,16 @@ export class IonicService {
                 to: comptrollerAddress,
                 abi: ComptrollerProxyAbi,
                 functionName: "enterMarkets",
-                args: [[assetAddress]]
+                args: [[assetAddress]],
             });
-            
 
             // Initial supply
             const initialSupplyTx = await wallet.sendTransaction({
                 to: assetAddress,
                 abi: cerc20DelegatorAbi,
                 functionName: "mint",
-                args: [BigInt(initialAmount)]
+                args: [BigInt(initialAmount)],
             });
-            
 
             let currentAmount = BigInt(initialAmount);
             const targetLTV = parseUnits(targetltv, 18);
@@ -243,7 +244,7 @@ export class IonicService {
                 // Check if target LTV reached
                 const metrics = await this.getHealthMetrics(wallet, {});
                 const currentLTV = parseUnits(metrics.ltv, 18);
-                
+
                 if (currentLTV >= targetLTV) {
                     // target ltv reached , stop looping
                     break;
@@ -257,18 +258,16 @@ export class IonicService {
                     to: assetAddress,
                     abi: cerc20DelegatorAbi,
                     functionName: "borrow",
-                    args: [borrowAmount]
+                    args: [borrowAmount],
                 });
-                
 
                 // Supply borrowed amount
                 const supplyTx = await wallet.sendTransaction({
                     to: assetAddress,
                     abi: cerc20DelegatorAbi,
                     functionName: "mint",
-                    args: [borrowAmount]
+                    args: [borrowAmount],
                 });
-                
 
                 currentAmount = borrowAmount;
                 console.log(`Completed iteration ${i + 1}, current amount: ${formatUnits(currentAmount, 18)}`);
@@ -283,31 +282,29 @@ export class IonicService {
 
     @Tool({
         name: "ionic_swap_collateral",
-        description: "Swap one collateral asset for another while maintaining borrow position"
+        description: "Swap one collateral asset for another while maintaining borrow position",
     })
     async swapCollateral(wallet: EVMWalletClient, params: SwapCollateralParameters): Promise<string> {
         const { fromAsset, toAsset, amount } = params;
         const chain = await wallet.getChain();
-        
+
         // First withdraw the collateral
         const fromAssetConfig = await this.getAssetConfig(chain.id, fromAsset);
-        
+
         // Withdraw collateral
         const pool = await wallet.sendTransaction({
             to: fromAssetConfig.address,
             abi: poolAbi,
             functionName: "redeemUnderlying",
-            args: [BigInt(amount)]
+            args: [BigInt(amount)],
         });
-
 
         const supplynewcollateral = await wallet.sendTransaction({
             to: fromAssetConfig.address,
             abi: poolAbi,
             functionName: "supplyAsset",
-            args: [toAsset, amount]
+            args: [toAsset, amount],
         });
-
 
         return "Collateral swap completed successfully";
     }
@@ -317,18 +314,20 @@ export class IonicService {
         const priceOracleAddress = ionicProtocolAddresses[chain.id]?.PriceOracle;
         if (!priceOracleAddress) throw new Error("Price oracle not found");
 
-        const price = await wallet.read({
+        const price = (await wallet.read({
             address: priceOracleAddress,
-            abi: [{
-                inputs: [{ name: "asset", type: "address" }],
-                name: "getUnderlyingPrice",
-                outputs: [{ name: "", type: "uint256" }],
-                stateMutability: "view",
-                type: "function"
-            }],
+            abi: [
+                {
+                    inputs: [{ name: "asset", type: "address" }],
+                    name: "getUnderlyingPrice",
+                    outputs: [{ name: "", type: "uint256" }],
+                    stateMutability: "view",
+                    type: "function",
+                },
+            ],
             functionName: "getUnderlyingPrice",
-            args: [assetAddress]
-        }) as unknown as bigint;
+            args: [assetAddress],
+        })) as unknown as bigint;
 
         return price;
     }
