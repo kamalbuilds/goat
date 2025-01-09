@@ -1,6 +1,9 @@
 export interface HealthMetrics {
-    totalBorrows: string;
-    totalCollateral: string;
+    totalSuppliedUSD: string;
+    totalBorrowedUSD: string;
+    ltv: string;
+    liquidity: string;
+    shortfall: string;
     healthFactor: string;
 }
 

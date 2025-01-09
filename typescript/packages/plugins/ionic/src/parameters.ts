@@ -18,8 +18,24 @@ export class BorrowAssetParameters extends createToolParameters(
 
 export class GetHealthMetricsParameters extends createToolParameters(
     z.object({
-        poolId: z.string().describe("The pool ID to check metrics for"),
-    }),
+    })
+) {}
+
+export class LoopAssetParameters extends createToolParameters(
+    z.object({
+        asset: z.string().describe("The asset to loop (e.g. weETH, dMBTC)"),
+        initialAmount: z.string().describe("Initial amount to supply"),
+        targetltv: z.string().describe("Target Loan-to-Value ratio"),
+        maxIterations: z.number().optional().describe("Maximum number of loop iterations")
+    })
+) {}
+
+export class SwapCollateralParameters extends createToolParameters(
+    z.object({
+        fromAsset: z.string().describe("Asset to swap from"),
+        toAsset: z.string().describe("Asset to swap to"),
+        amount: z.string().describe("Amount to swap")
+    })
 ) {}
 
 export class GetPoolDataParameters extends createToolParameters(
