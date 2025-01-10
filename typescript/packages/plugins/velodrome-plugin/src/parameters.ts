@@ -33,4 +33,4 @@ export class AddLiquidityParams extends createToolParameters(
             .default(60 * 60 * 24)
             .describe("The deadline for the transaction in seconds from now"),
     }),
-) {} 
+) {}

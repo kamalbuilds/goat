@@ -1,823 +1,823 @@
 export const ROUTER_ABI = [
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "_factory",
-                "type": "address"
+                internalType: "address",
+                name: "_factory",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "_weth",
-                "type": "address"
+                internalType: "address",
+                name: "_weth",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "_sfs",
-                "type": "address"
+                internalType: "address",
+                name: "_sfs",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "_recipient",
-                "type": "address"
-            }
+                internalType: "address",
+                name: "_recipient",
+                type: "address",
+            },
         ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
+        stateMutability: "nonpayable",
+        type: "constructor",
     },
     {
-        "inputs": [],
-        "name": "ETHTransferFailed",
-        "type": "error"
+        inputs: [],
+        name: "ETHTransferFailed",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "Expired",
-        "type": "error"
+        inputs: [],
+        name: "Expired",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "InsufficientAmount",
-        "type": "error"
+        inputs: [],
+        name: "InsufficientAmount",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "InsufficientAmountA",
-        "type": "error"
+        inputs: [],
+        name: "InsufficientAmountA",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "InsufficientAmountADesired",
-        "type": "error"
+        inputs: [],
+        name: "InsufficientAmountADesired",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "InsufficientAmountB",
-        "type": "error"
+        inputs: [],
+        name: "InsufficientAmountB",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "InsufficientAmountBDesired",
-        "type": "error"
+        inputs: [],
+        name: "InsufficientAmountBDesired",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "InsufficientLiquidity",
-        "type": "error"
+        inputs: [],
+        name: "InsufficientLiquidity",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "InsufficientOutputAmount",
-        "type": "error"
+        inputs: [],
+        name: "InsufficientOutputAmount",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "InvalidPath",
-        "type": "error"
+        inputs: [],
+        name: "InvalidPath",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "OnlyWETH",
-        "type": "error"
+        inputs: [],
+        name: "OnlyWETH",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "SameAddresses",
-        "type": "error"
+        inputs: [],
+        name: "SameAddresses",
+        type: "error",
     },
     {
-        "inputs": [],
-        "name": "ZeroAddress",
-        "type": "error"
+        inputs: [],
+        name: "ZeroAddress",
+        type: "error",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "tokenA",
-                "type": "address"
+                internalType: "address",
+                name: "tokenA",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "tokenB",
-                "type": "address"
+                internalType: "address",
+                name: "tokenB",
+                type: "address",
             },
             {
-                "internalType": "bool",
-                "name": "stable",
-                "type": "bool"
+                internalType: "bool",
+                name: "stable",
+                type: "bool",
             },
             {
-                "internalType": "uint256",
-                "name": "amountADesired",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountADesired",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountBDesired",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountBDesired",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountAMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountAMin",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountBMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountBMin",
+                type: "uint256",
             },
             {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
+                internalType: "address",
+                name: "to",
+                type: "address",
             },
             {
-                "internalType": "uint256",
-                "name": "deadline",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+            },
         ],
-        "name": "addLiquidity",
-        "outputs": [
+        name: "addLiquidity",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "amountA",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountA",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountB",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountB",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "liquidity",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "liquidity",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        stateMutability: "nonpayable",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
+                internalType: "address",
+                name: "token",
+                type: "address",
             },
             {
-                "internalType": "bool",
-                "name": "stable",
-                "type": "bool"
+                internalType: "bool",
+                name: "stable",
+                type: "bool",
             },
             {
-                "internalType": "uint256",
-                "name": "amountTokenDesired",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountTokenDesired",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountTokenMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountTokenMin",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountETHMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountETHMin",
+                type: "uint256",
             },
             {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
+                internalType: "address",
+                name: "to",
+                type: "address",
             },
             {
-                "internalType": "uint256",
-                "name": "deadline",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+            },
         ],
-        "name": "addLiquidityETH",
-        "outputs": [
+        name: "addLiquidityETH",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "amountToken",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountToken",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountETH",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountETH",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "liquidity",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "liquidity",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "payable",
-        "type": "function"
+        stateMutability: "payable",
+        type: "function",
     },
     {
-        "inputs": [],
-        "name": "factory",
-        "outputs": [
+        inputs: [],
+        name: "factory",
+        outputs: [
             {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
+        stateMutability: "view",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "uint256",
-                "name": "amountIn",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountIn",
+                type: "uint256",
             },
             {
-                "components": [
+                components: [
                     {
-                        "internalType": "address",
-                        "name": "from",
-                        "type": "address"
+                        internalType: "address",
+                        name: "from",
+                        type: "address",
                     },
                     {
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
+                        internalType: "address",
+                        name: "to",
+                        type: "address",
                     },
                     {
-                        "internalType": "bool",
-                        "name": "stable",
-                        "type": "bool"
-                    }
+                        internalType: "bool",
+                        name: "stable",
+                        type: "bool",
+                    },
                 ],
-                "internalType": "struct IRouter.Route[]",
-                "name": "routes",
-                "type": "tuple[]"
-            }
+                internalType: "struct IRouter.Route[]",
+                name: "routes",
+                type: "tuple[]",
+            },
         ],
-        "name": "getAmountsOut",
-        "outputs": [
+        name: "getAmountsOut",
+        outputs: [
             {
-                "internalType": "uint256[]",
-                "name": "amounts",
-                "type": "uint256[]"
-            }
+                internalType: "uint256[]",
+                name: "amounts",
+                type: "uint256[]",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
+        stateMutability: "view",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "tokenA",
-                "type": "address"
+                internalType: "address",
+                name: "tokenA",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "tokenB",
-                "type": "address"
+                internalType: "address",
+                name: "tokenB",
+                type: "address",
             },
             {
-                "internalType": "bool",
-                "name": "stable",
-                "type": "bool"
-            }
+                internalType: "bool",
+                name: "stable",
+                type: "bool",
+            },
         ],
-        "name": "getReserves",
-        "outputs": [
+        name: "getReserves",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "reserveA",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "reserveA",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "reserveB",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "reserveB",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
+        stateMutability: "view",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "tokenA",
-                "type": "address"
+                internalType: "address",
+                name: "tokenA",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "tokenB",
-                "type": "address"
+                internalType: "address",
+                name: "tokenB",
+                type: "address",
             },
             {
-                "internalType": "bool",
-                "name": "stable",
-                "type": "bool"
-            }
+                internalType: "bool",
+                name: "stable",
+                type: "bool",
+            },
         ],
-        "name": "poolFor",
-        "outputs": [
+        name: "poolFor",
+        outputs: [
             {
-                "internalType": "address",
-                "name": "pool",
-                "type": "address"
-            }
+                internalType: "address",
+                name: "pool",
+                type: "address",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
+        stateMutability: "view",
+        type: "function",
     },
     {
-        "inputs": [],
-        "name": "poolImplementation",
-        "outputs": [
+        inputs: [],
+        name: "poolImplementation",
+        outputs: [
             {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
+        stateMutability: "view",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "tokenA",
-                "type": "address"
+                internalType: "address",
+                name: "tokenA",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "tokenB",
-                "type": "address"
+                internalType: "address",
+                name: "tokenB",
+                type: "address",
             },
             {
-                "internalType": "bool",
-                "name": "stable",
-                "type": "bool"
+                internalType: "bool",
+                name: "stable",
+                type: "bool",
             },
             {
-                "internalType": "uint256",
-                "name": "amountADesired",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountADesired",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountBDesired",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "amountBDesired",
+                type: "uint256",
+            },
         ],
-        "name": "quoteAddLiquidity",
-        "outputs": [
+        name: "quoteAddLiquidity",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "amountA",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountA",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountB",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountB",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "liquidity",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "liquidity",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
+        stateMutability: "view",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "tokenA",
-                "type": "address"
+                internalType: "address",
+                name: "tokenA",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "tokenB",
-                "type": "address"
+                internalType: "address",
+                name: "tokenB",
+                type: "address",
             },
             {
-                "internalType": "bool",
-                "name": "stable",
-                "type": "bool"
+                internalType: "bool",
+                name: "stable",
+                type: "bool",
             },
             {
-                "internalType": "uint256",
-                "name": "liquidity",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "liquidity",
+                type: "uint256",
+            },
         ],
-        "name": "quoteRemoveLiquidity",
-        "outputs": [
+        name: "quoteRemoveLiquidity",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "amountA",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountA",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountB",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "amountB",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
+        stateMutability: "view",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "tokenA",
-                "type": "address"
+                internalType: "address",
+                name: "tokenA",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "tokenB",
-                "type": "address"
+                internalType: "address",
+                name: "tokenB",
+                type: "address",
             },
             {
-                "internalType": "bool",
-                "name": "stable",
-                "type": "bool"
+                internalType: "bool",
+                name: "stable",
+                type: "bool",
             },
             {
-                "internalType": "uint256",
-                "name": "liquidity",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "liquidity",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountAMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountAMin",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountBMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountBMin",
+                type: "uint256",
             },
             {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
+                internalType: "address",
+                name: "to",
+                type: "address",
             },
             {
-                "internalType": "uint256",
-                "name": "deadline",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+            },
         ],
-        "name": "removeLiquidity",
-        "outputs": [
+        name: "removeLiquidity",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "amountA",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountA",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountB",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "amountB",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        stateMutability: "nonpayable",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
+                internalType: "address",
+                name: "token",
+                type: "address",
             },
             {
-                "internalType": "bool",
-                "name": "stable",
-                "type": "bool"
+                internalType: "bool",
+                name: "stable",
+                type: "bool",
             },
             {
-                "internalType": "uint256",
-                "name": "liquidity",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "liquidity",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountTokenMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountTokenMin",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountETHMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountETHMin",
+                type: "uint256",
             },
             {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
+                internalType: "address",
+                name: "to",
+                type: "address",
             },
             {
-                "internalType": "uint256",
-                "name": "deadline",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+            },
         ],
-        "name": "removeLiquidityETH",
-        "outputs": [
+        name: "removeLiquidityETH",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "amountToken",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountToken",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountETH",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "amountETH",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        stateMutability: "nonpayable",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
+                internalType: "address",
+                name: "token",
+                type: "address",
             },
             {
-                "internalType": "bool",
-                "name": "stable",
-                "type": "bool"
+                internalType: "bool",
+                name: "stable",
+                type: "bool",
             },
             {
-                "internalType": "uint256",
-                "name": "liquidity",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "liquidity",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountTokenMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountTokenMin",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountETHMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountETHMin",
+                type: "uint256",
             },
             {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
+                internalType: "address",
+                name: "to",
+                type: "address",
             },
             {
-                "internalType": "uint256",
-                "name": "deadline",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+            },
         ],
-        "name": "removeLiquidityETHSupportingFeeOnTransferTokens",
-        "outputs": [
+        name: "removeLiquidityETHSupportingFeeOnTransferTokens",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "amountETH",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "amountETH",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        stateMutability: "nonpayable",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "address",
-                "name": "tokenA",
-                "type": "address"
+                internalType: "address",
+                name: "tokenA",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "tokenB",
-                "type": "address"
-            }
+                internalType: "address",
+                name: "tokenB",
+                type: "address",
+            },
         ],
-        "name": "sortTokens",
-        "outputs": [
+        name: "sortTokens",
+        outputs: [
             {
-                "internalType": "address",
-                "name": "token0",
-                "type": "address"
+                internalType: "address",
+                name: "token0",
+                type: "address",
             },
             {
-                "internalType": "address",
-                "name": "token1",
-                "type": "address"
-            }
+                internalType: "address",
+                name: "token1",
+                type: "address",
+            },
         ],
-        "stateMutability": "pure",
-        "type": "function"
+        stateMutability: "pure",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "uint256",
-                "name": "amountOutMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountOutMin",
+                type: "uint256",
             },
             {
-                "components": [
+                components: [
                     {
-                        "internalType": "address",
-                        "name": "from",
-                        "type": "address"
+                        internalType: "address",
+                        name: "from",
+                        type: "address",
                     },
                     {
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
+                        internalType: "address",
+                        name: "to",
+                        type: "address",
                     },
                     {
-                        "internalType": "bool",
-                        "name": "stable",
-                        "type": "bool"
-                    }
+                        internalType: "bool",
+                        name: "stable",
+                        type: "bool",
+                    },
                 ],
-                "internalType": "struct IRouter.Route[]",
-                "name": "routes",
-                "type": "tuple[]"
+                internalType: "struct IRouter.Route[]",
+                name: "routes",
+                type: "tuple[]",
             },
             {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
+                internalType: "address",
+                name: "to",
+                type: "address",
             },
             {
-                "internalType": "uint256",
-                "name": "deadline",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+            },
         ],
-        "name": "swapExactETHForTokens",
-        "outputs": [
+        name: "swapExactETHForTokens",
+        outputs: [
             {
-                "internalType": "uint256[]",
-                "name": "amounts",
-                "type": "uint256[]"
-            }
+                internalType: "uint256[]",
+                name: "amounts",
+                type: "uint256[]",
+            },
         ],
-        "stateMutability": "payable",
-        "type": "function"
+        stateMutability: "payable",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "uint256",
-                "name": "amountIn",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountIn",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountOutMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountOutMin",
+                type: "uint256",
             },
             {
-                "components": [
+                components: [
                     {
-                        "internalType": "address",
-                        "name": "from",
-                        "type": "address"
+                        internalType: "address",
+                        name: "from",
+                        type: "address",
                     },
                     {
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
+                        internalType: "address",
+                        name: "to",
+                        type: "address",
                     },
                     {
-                        "internalType": "bool",
-                        "name": "stable",
-                        "type": "bool"
-                    }
+                        internalType: "bool",
+                        name: "stable",
+                        type: "bool",
+                    },
                 ],
-                "internalType": "struct IRouter.Route[]",
-                "name": "routes",
-                "type": "tuple[]"
+                internalType: "struct IRouter.Route[]",
+                name: "routes",
+                type: "tuple[]",
             },
             {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
+                internalType: "address",
+                name: "to",
+                type: "address",
             },
             {
-                "internalType": "uint256",
-                "name": "deadline",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+            },
         ],
-        "name": "swapExactTokensForETH",
-        "outputs": [
+        name: "swapExactTokensForETH",
+        outputs: [
             {
-                "internalType": "uint256[]",
-                "name": "amounts",
-                "type": "uint256[]"
-            }
+                internalType: "uint256[]",
+                name: "amounts",
+                type: "uint256[]",
+            },
         ],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        stateMutability: "nonpayable",
+        type: "function",
     },
     {
-        "inputs": [
+        inputs: [
             {
-                "internalType": "uint256",
-                "name": "amountIn",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountIn",
+                type: "uint256",
             },
             {
-                "internalType": "uint256",
-                "name": "amountOutMin",
-                "type": "uint256"
+                internalType: "uint256",
+                name: "amountOutMin",
+                type: "uint256",
             },
             {
-                "components": [
+                components: [
                     {
-                        "internalType": "address",
-                        "name": "from",
-                        "type": "address"
+                        internalType: "address",
+                        name: "from",
+                        type: "address",
                     },
                     {
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
+                        internalType: "address",
+                        name: "to",
+                        type: "address",
                     },
                     {
-                        "internalType": "bool",
-                        "name": "stable",
-                        "type": "bool"
-                    }
+                        internalType: "bool",
+                        name: "stable",
+                        type: "bool",
+                    },
                 ],
-                "internalType": "struct IRouter.Route[]",
-                "name": "routes",
-                "type": "tuple[]"
+                internalType: "struct IRouter.Route[]",
+                name: "routes",
+                type: "tuple[]",
             },
             {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
+                internalType: "address",
+                name: "to",
+                type: "address",
             },
             {
-                "internalType": "uint256",
-                "name": "deadline",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+            },
         ],
-        "name": "swapExactTokensForTokens",
-        "outputs": [
+        name: "swapExactTokensForTokens",
+        outputs: [
             {
-                "internalType": "uint256[]",
-                "name": "amounts",
-                "type": "uint256[]"
-            }
+                internalType: "uint256[]",
+                name: "amounts",
+                type: "uint256[]",
+            },
         ],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        stateMutability: "nonpayable",
+        type: "function",
     },
     {
-        "inputs": [],
-        "name": "tokenId",
-        "outputs": [
+        inputs: [],
+        name: "tokenId",
+        outputs: [
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
+        stateMutability: "view",
+        type: "function",
     },
     {
-        "inputs": [],
-        "name": "weth",
-        "outputs": [
+        inputs: [],
+        name: "weth",
+        outputs: [
             {
-                "internalType": "contract IWETH",
-                "name": "",
-                "type": "address"
-            }
+                internalType: "contract IWETH",
+                name: "",
+                type: "address",
+            },
         ],
-        "stateMutability": "view",
-        "type": "function"
+        stateMutability: "view",
+        type: "function",
     },
     {
-        "stateMutability": "payable",
-        "type": "receive"
-    }
-] as const; 
+        stateMutability: "payable",
+        type: "receive",
+    },
+] as const;
