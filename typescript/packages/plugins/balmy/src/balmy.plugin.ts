@@ -11,4 +11,4 @@ export class BalmyPlugin extends PluginBase {
 
 export function balmy() {
     return new BalmyPlugin();
-} 
+}

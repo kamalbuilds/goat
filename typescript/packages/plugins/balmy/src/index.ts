@@ -3,5 +3,5 @@ export {
     GetBalanceParameters,
     GetAllowanceParameters,
     GetQuoteParameters,
-    ExecuteSwapParameters
-} from "./parameters"; 
+    ExecuteSwapParameters,
+} from "./parameters";

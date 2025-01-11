@@ -1,8 +1,7 @@
 import readline from "node:readline";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
-import { http } from "viem";
-import { createWalletClient } from "viem";
+import { http, createWalletClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { mainnet } from "viem/chains";
 
@@ -58,10 +57,14 @@ const walletClient = createWalletClient({
                     console.log(event.toolResults);
                 },
             });
+            console.log("\n📊 FINAL RESPONSE");
+            console.log("-------------------");
             console.log(result.text);
         } catch (error) {
+            console.log("\n❌ ERROR");
+            console.log("-------------------");
             console.error(error);
         }
         console.log("\n-------------------\n");
     }
-})(); 
+})();
