@@ -1,8 +1,9 @@
 {
     "private": true,
-    "name": "goat-repo",
+    "name": "goat-typescript",
     "version": "0.1.1",
     "scripts": {
+        "prepare": "cd .. && pnpm install && cd typescript",
         "build": "pnpm turbo build",
         "build:libs": "pnpm turbo --filter \"./packages/**\" build",
         "build:libs:prod": "cross-env NODE_ENV=production pnpm build:libs",
@@ -46,9 +47,5 @@
         "url": "https://github.com/crossmint/goat/issues"
     },
     "keywords": ["ai", "agents", "web3"],
-    "packageManager": "pnpm@9.14.2",
-    "dependencies": {
-        "zod": "3.24.1",
-        "zod-to-json-schema": "3.24.1"
-    }
+    "packageManager": "pnpm@9.14.2"
 }

@@ -1,5 +1,34 @@
 # @goat-sdk/plugin-solana-magiceden
 
+## 0.2.11
+
+### Patch Changes
+
+- Updated dependencies [b9af25b]
+  - @goat-sdk/core@0.4.5
+  - @goat-sdk/wallet-solana@0.2.10
+
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies [50180d4]
+  - @goat-sdk/core@0.4.4
+  - @goat-sdk/wallet-solana@0.2.9
+
+## 0.2.9
+
+### Patch Changes
+
+- ef12907: Execute tx when calling the buy tool
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies [87eed18]
+  - @goat-sdk/wallet-solana@0.2.8
+
 ## 0.2.7
 
 ### Patch Changes
