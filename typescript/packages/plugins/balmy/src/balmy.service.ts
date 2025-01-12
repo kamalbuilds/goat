@@ -22,24 +22,22 @@ export class BalmyService {
                     txValidFor: "180s",
                     disableValidation: true,
                     referrer: {
-                        address: "0x666446eC2343e9E7e3D75C4C5b6A15355Ec7d7D4",
-                        name: "balmy"
+                        address: "0x67E6FB17f0ff00C2fA8484C3A1a0A24FE9a817bf",
+                        name: "kamal"
                     }
                 },
                 custom: {
                     bebop: {
                         enabled: false,
-                        apiKey: "b74e8b6b-f71e-49ce-9677-2ec47f90da37",
+                        apiKey: "",
                     },
                     '0x': {
                         enabled: true,
-                        apiKey: "b74e8b6b-f71e-49ce-9677-2ec47f90da37",
-                        affiliateAddress: "0x666446eC2343e9E7e3D75C4C5b6A15355Ec7d7D4",
-                        chainId: 34443,
+                        apiKey: "",
                         baseUrl: "https://api.0x.org"
                     },
                     'li-fi': {
-                        apiKey: "b74e8b6b-f71e-49ce-9677-2ec47f90da37"
+                        apiKey: ""
                     },
                     'paraswap': {
                         enabled: false,
@@ -87,8 +85,6 @@ export class BalmyService {
             }]
         });
 
-        console.log(balances,"balances")
-
         // Convert nested object structure with BigInt values to strings
         return Object.entries(balances).reduce((acc: Record<string, any>, [chainId, tokens]) => {
             acc[chainId] = Object.entries(tokens).reduce((tokenAcc: Record<string, any>, [token, balance]) => {
@@ -121,23 +117,24 @@ export class BalmyService {
     async getQuote(walletClient: EVMWalletClient, parameters: GetQuoteParameters)  {
         
         const chainid = await walletClient.getChain().id;
-    
-        console.log(parameters.order,"order parameters", parameters.takerAddress);
 
         const request: QuoteRequest = {
             chainId: chainid,
-            sellToken: "0xd988097fb8612cc24eec14542bc03424c656005f",
-            buyToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-            order: {
-                type: "sell",
-                sellAmount: "100000"
-            },
+            sellToken: parameters.tokenIn,
+            buyToken: parameters.tokenOut,
+            order: parameters.order.type === "sell" 
+                ? {
+                    type: "sell",
+                    sellAmount: parameters.order.Amount
+                  }
+                : {
+                    type: "buy", 
+                    buyAmount: parameters.order.Amount
+                  },
             slippagePercentage: parameters.slippagePercentage,
             gasSpeed: parameters.gasSpeed,
             takerAddress: parameters.takerAddress || "0x0000000000000000000000000000000000000000",
         }
-
-        console.log(request, "request");
         
         const quotes = await this.sdk.quoteService.getAllQuotesWithTxs({
             request: request,
@@ -191,38 +188,6 @@ export class BalmyService {
     })
     async executeSwap(walletClient: EVMWalletClient, parameters: ExecuteSwapParameters) {
         const bestQuote = await this.getQuote(walletClient, parameters);
-
-        
-        const bestQuoteForLog = {
-            ...bestQuote,
-            sellAmount: {
-                ...bestQuote.sellAmount,
-                amount: bestQuote.sellAmount.amount.toString()
-            },
-            buyAmount: {
-                ...bestQuote.buyAmount,
-                amount: bestQuote.buyAmount.amount.toString()
-            },
-            maxSellAmount: {
-                ...bestQuote.maxSellAmount,
-                amount: bestQuote.maxSellAmount.amount.toString()
-            },
-            minBuyAmount: {
-                ...bestQuote.minBuyAmount,
-                amount: bestQuote.minBuyAmount.amount.toString()
-            },
-            gas: {
-                ...bestQuote?.gas,
-                estimatedGas: bestQuote?.gas?.estimatedGas?.toString() ?? "0",
-                estimatedCost: bestQuote?.gas?.estimatedCost?.toString() ?? "0"
-            },
-            tx: {
-                ...bestQuote.tx,
-                value: (bestQuote.tx?.value ?? 0n).toString()
-            }
-        };
-
-        console.log(bestQuoteForLog, "bestQuote");
 
         const data = `0x${bestQuote.tx.data.replace('0x', '')}` as `0x${string}`;
         

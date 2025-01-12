@@ -324,6 +324,36 @@ importers:
         specifier: 2.21.49
         version: 2.21.49(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.1)
 
+  examples/vercel-ai/balancer-testing:
+    dependencies:
+      '@ai-sdk/openai':
+        specifier: ^1.0.4
+        version: 1.0.11(zod@3.24.1)
+      '@goat-sdk/adapter-vercel-ai':
+        specifier: workspace:*
+        version: link:../../../packages/adapters/vercel-ai
+      '@goat-sdk/core':
+        specifier: workspace:*
+        version: link:../../../packages/core
+      '@goat-sdk/plugin-erc20':
+        specifier: workspace:*
+        version: link:../../../packages/plugins/erc20
+      '@goat-sdk/wallet-evm':
+        specifier: workspace:*
+        version: link:../../../packages/wallets/evm
+      '@goat-sdk/wallet-viem':
+        specifier: workspace:*
+        version: link:../../../packages/wallets/viem
+      ai:
+        specifier: 'catalog:'
+        version: 4.0.3(react@19.0.0-rc-66855b96-20241106)(zod@3.24.1)
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
+      viem:
+        specifier: 2.21.49
+        version: 2.21.49(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.1)
+
   examples/vercel-ai/balmy:
     dependencies:
       '@ai-sdk/openai':
@@ -866,8 +896,8 @@ importers:
   packages/plugins/balmy:
     dependencies:
       '@balmy/sdk':
-        specifier: latest
-        version: 0.5.2(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.1)
+        specifier: 0.6.1
+        version: 0.6.1(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.1)
       '@goat-sdk/core':
         specifier: workspace:*
         version: link:../../core
@@ -2493,8 +2523,8 @@ packages:
     resolution: {integrity: sha512-vN5p+1kl59GVKMvTHt55NzzmYVxprfJD+ql7U9NFIfKCBkYE55LYtS+WtPlaYOyzydrKI8Nezd+aZextrd+FMA==}
     engines: {node: '>=6.9.0'}
 
-  '@balmy/sdk@0.5.2':
-    resolution: {integrity: sha512-PC3Q1PzteSFEpaJigvp43vLxcOR4lEFjR0Q1y8tN4uzVC5UudfEBmoHU4SxMvYlIpIVrVW3zSMYYtgNL4A9I/Q==}
+  '@balmy/sdk@0.6.1':
+    resolution: {integrity: sha512-kSXksejQDaJge6YsK8FPd6Yh0BzHPiuN678YVPk9vZjoLYD0lCItWUxyVGpJJ9m71BMK9y/7nI5VbIAlaATgJA==}
 
   '@biomejs/biome@1.9.4':
     resolution: {integrity: sha512-1rkd7G70+o9KkTn5KLmDYXihGoTaIGO9PIIN2ZB7UJxFrWw04CZHPYiMRjYsaDvVV7hP1dYNRLxSANLaBFGpog==}
@@ -13095,7 +13125,7 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@balmy/sdk@0.5.2(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.1)':
+  '@balmy/sdk@0.6.1(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.1)':
     dependencies:
       cross-fetch: 3.1.5(encoding@0.1.13)
       crypto-js: 4.2.0
