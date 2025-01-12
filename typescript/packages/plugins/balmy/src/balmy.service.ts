@@ -11,23 +11,83 @@ import {
 export class BalmyService {
     private sdk;
 
-
+    private config = {
+        quotes: {
+            sourceList: {
+                type: 'local' as const
+            },
+            defaultConfig: {
+                global: {
+                    slippagePercentage: 0.5,
+                    txValidFor: "180s",
+                    disableValidation: true,
+                    referrer: {
+                        address: "0x666446eC2343e9E7e3D75C4C5b6A15355Ec7d7D4",
+                        name: "balmy"
+                    }
+                },
+                custom: {
+                    bebop: {
+                        enabled: false,
+                        apiKey: "b74e8b6b-f71e-49ce-9677-2ec47f90da37",
+                    },
+                    '0x': {
+                        enabled: true,
+                        apiKey: "b74e8b6b-f71e-49ce-9677-2ec47f90da37",
+                        affiliateAddress: "0x666446eC2343e9E7e3D75C4C5b6A15355Ec7d7D4",
+                        chainId: 34443,
+                        baseUrl: "https://api.0x.org"
+                    },
+                    'li-fi': {
+                        apiKey: "b74e8b6b-f71e-49ce-9677-2ec47f90da37"
+                    },
+                    'paraswap': {
+                        enabled: false,
+                        sourceAllowlist: [],
+                        sourceDenylist: []
+                    },
+                    '1inch': {
+                        enabled: false,
+                        customUrl: "https://api.1inch.exchange/v3.0/56",
+                        sourceAllowlist: []
+                    }
+                }
+            }
+        },
+        provider: {
+            source: {
+                type: 'http' as const,
+                url: "https://mainnet.mode.network/",
+                supportedChains: [34443]
+            },
+            defaultConfig: {
+                chainId: 34443,
+                rpcUrl: "https://mainnet.mode.network/"
+            }
+        }
+    };
 
     constructor() {
-        this.sdk = buildSDK();
+
+        this.sdk = buildSDK(this.config);
     }
 
     @Tool({
         description: "Get token balances for an account"
     })
     async getBalances(walletClient: EVMWalletClient, parameters: GetBalanceParameters) {
+        
+        const chainid = await walletClient.getChain().id;
+
         const balances = await this.sdk.balanceService.getBalances({
             tokens: [{
-                chainId: parameters.chainId,
+                chainId: chainid,
                 account: parameters.account,
                 token: parameters.token
             }]
         });
+
+        console.log(balances,"balances")
 
         // Convert nested object structure with BigInt values to strings
         return Object.entries(balances).reduce((acc: Record<string, any>, [chainId, tokens]) => {
@@ -58,44 +118,120 @@ export class BalmyService {
     @Tool({
         description: "Get quotes for a token swap"
     })
-    async getQuote(walletClient: EVMWalletClient, parameters: GetQuoteParameters) {
+    async getQuote(walletClient: EVMWalletClient, parameters: GetQuoteParameters)  {
         
+        const chainid = await walletClient.getChain().id;
+    
+        console.log(parameters.order,"order parameters", parameters.takerAddress);
+
         const request: QuoteRequest = {
-            chainId: parameters.chainId,
-            sellToken: parameters.tokenIn,
-            buyToken: parameters.tokenOut,
-            order: parameters.order,
+            chainId: chainid,
+            sellToken: "0xd988097fb8612cc24eec14542bc03424c656005f",
+            buyToken: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            order: {
+                type: "sell",
+                sellAmount: "100000"
+            },
             slippagePercentage: parameters.slippagePercentage,
             gasSpeed: parameters.gasSpeed,
-            takerAddress: parameters.takerAddress || "0x666446eC2343e9E7e3D75C4C5b6A15355Ec7d7D4",
-            
+            takerAddress: parameters.takerAddress || "0x0000000000000000000000000000000000000000",
         }
 
-        console.log(request);
+        console.log(request, "request");
         
-        const quotes = await this.sdk.quoteService.getQuotes({
+        const quotes = await this.sdk.quoteService.getAllQuotesWithTxs({
             request: request,
             config: {
                 timeout: "10s"
             }
         });
 
-        console.log(quotes);
+        // Convert BigInt values to strings for logging and return
+        const quotesForLog = quotes.map(quote => ({
+            ...quote,
+            sellAmount: {
+                ...quote.sellAmount,
+                amount: quote.sellAmount.amount.toString()
+            },
+            buyAmount: {
+                ...quote.buyAmount,
+                amount: quote.buyAmount.amount.toString()
+            },
+            maxSellAmount: {
+                ...quote.maxSellAmount,
+                amount: quote.maxSellAmount.amount.toString()
+            },
+            minBuyAmount: {
+                ...quote.minBuyAmount,
+                amount: quote.minBuyAmount.amount.toString()
+            },
+            gas: {
+                ...quote?.gas,
+                estimatedGas: quote?.gas?.estimatedGas?.toString() ?? "0",
+                estimatedCost: quote?.gas?.estimatedCost?.toString() ?? "0"
+            },
+            tx: {
+                ...quote.tx,
+                value: (quote.tx?.value ?? 0n).toString()
+            },
+            customData: {
+                ...quote.customData,
+                tx: {
+                    ...quote.customData.tx,
+                    value: (quote.customData.tx?.value ?? 0n).toString()
+                }
+            }
+        }));
 
-        return quotes;
+        return quotesForLog[0];
     }
 
     @Tool({
-        description: "Execute a swap using the best quote"
+        description: "Execute a swap using the best quote, also ensure that ERC20 approval is done before calling this"
     })
     async executeSwap(walletClient: EVMWalletClient, parameters: ExecuteSwapParameters) {
-        const quotes = await this.getQuote(walletClient, parameters);
-        const bestQuote = quotes[0];
+        const bestQuote = await this.getQuote(walletClient, parameters);
 
-        console.log(bestQuote);
-        return bestQuote;
-        // return await walletClient.sendTransaction(
-        //     bestQuote.tx as `0x${string}`
-        // );
+        
+        const bestQuoteForLog = {
+            ...bestQuote,
+            sellAmount: {
+                ...bestQuote.sellAmount,
+                amount: bestQuote.sellAmount.amount.toString()
+            },
+            buyAmount: {
+                ...bestQuote.buyAmount,
+                amount: bestQuote.buyAmount.amount.toString()
+            },
+            maxSellAmount: {
+                ...bestQuote.maxSellAmount,
+                amount: bestQuote.maxSellAmount.amount.toString()
+            },
+            minBuyAmount: {
+                ...bestQuote.minBuyAmount,
+                amount: bestQuote.minBuyAmount.amount.toString()
+            },
+            gas: {
+                ...bestQuote?.gas,
+                estimatedGas: bestQuote?.gas?.estimatedGas?.toString() ?? "0",
+                estimatedCost: bestQuote?.gas?.estimatedCost?.toString() ?? "0"
+            },
+            tx: {
+                ...bestQuote.tx,
+                value: (bestQuote.tx?.value ?? 0n).toString()
+            }
+        };
+
+        console.log(bestQuoteForLog, "bestQuote");
+
+        const data = `0x${bestQuote.tx.data.replace('0x', '')}` as `0x${string}`;
+        
+        const swaptxn = await walletClient.sendTransaction({
+            to: bestQuote.tx.to,
+            value: BigInt(bestQuote.tx.value),
+            data: data,
+        });
+
+        return swaptxn.hash;
     }
 } 
