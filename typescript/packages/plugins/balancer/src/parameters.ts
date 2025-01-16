@@ -1,8 +1,7 @@
 import { createToolParameters } from "@goat-sdk/core";
-import { z } from "zod"
+import { z } from "zod";
 
 const hexAddress = z.string().regex(/^0x[a-fA-F0-9]{40}$/);
-
 
 export class SwapParameters extends createToolParameters(
     z.object({
@@ -14,7 +13,7 @@ export class SwapParameters extends createToolParameters(
         slippage: z.string().default("0.1").describe("Maximum slippage allowed (in percentage)"),
         deadline: z.number().optional().describe("Transaction deadline (in seconds)"),
         wethIsEth: z.boolean().default(false).describe("Whether to use ETH instead of WETH"),
-    })
+    }),
 ) {}
 
 const TokenAmount = z.object({
@@ -23,7 +22,6 @@ const TokenAmount = z.object({
     decimals: z.number().describe("Token decimals"),
 });
 
-
 export class LiquidityParameters extends createToolParameters(
     z.object({
         pool: hexAddress.describe("The address of the Balancer pool"),
@@ -31,9 +29,8 @@ export class LiquidityParameters extends createToolParameters(
         slippage: z.string().default("0.1").describe("Maximum slippage allowed (in percentage)"),
         deadline: z.number().optional().describe("Transaction deadline (in seconds)"),
         wethIsEth: z.boolean().default(false).describe("Whether to use ETH instead of WETH"),
-    })
+    }),
 ) {}
-
 
 export class RemoveLiquidityParameters extends createToolParameters(
     z.object({
@@ -41,5 +38,5 @@ export class RemoveLiquidityParameters extends createToolParameters(
         bptAmountIn: z.string().describe("Amount of BPT tokens to remove"),
         slippage: z.string().default("0.1").describe("Maximum slippage allowed (in percentage)"),
         wethIsEth: z.boolean().default(false).describe("Whether to unwrap WETH to ETH"),
-    })
-) {} 
+    }),
+) {}

@@ -11,4 +11,4 @@ export class BalancerPlugin extends PluginBase {
 
 export function balancer() {
     return new BalancerPlugin();
-} 
+}

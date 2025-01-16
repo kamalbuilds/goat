@@ -1,2 +1,2 @@
 export { BalancerPlugin, balancer } from "./balancer.plugin";
-export type { SwapParameters, LiquidityParameters } from "./parameters"; 
+export type { SwapParameters, LiquidityParameters } from "./parameters";
