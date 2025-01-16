@@ -1,38 +1,64 @@
 import { Tool } from "@goat-sdk/core";
-import type { EVMWalletClient } from "@goat-sdk/wallet-evm";
-import { BalancerApi, ChainId, Slippage, SwapKind, Token, Swap, AddLiquidity, AddLiquidityKind } from "@balancer/sdk";
-import { SwapParameters, LiquidityParameters } from "./parameters";
+import { EVMWalletClient } from "@goat-sdk/wallet-evm";
+import { 
+    BalancerApi, 
+    ChainId, 
+    Slippage, 
+    SwapKind, 
+    Token, 
+    TokenAmount,
+    Swap, 
+    SwapBuildOutputExactIn,
+    ExactInQueryOutput,
+    AddLiquidity,
+    AddLiquidityKind,
+    AddLiquidityInput,
+    RemoveLiquidity,
+    RemoveLiquidityKind,
+    RemoveLiquidityInput,
+    InputAmount
+} from "@balancer/sdk";
+import { SwapParameters, LiquidityParameters, RemoveLiquidityParameters } from "./parameters";
 
 export class BalancerService {
+
     private getBalancerApi(chainId: ChainId) {
-        return new BalancerApi("https://api-v3.balancer.fi/", chainId);
+        console.log("chainId from getbalancerapi", chainId);
+        return new BalancerApi("https://api-v3.balancer.fi/", ChainId.POLYGON);
     }
+
+    private rpcUrl = "https://polygon.llamarpc.com";
 
     @Tool({
         name: "swap_on_balancer",
         description: "Swap a token on Balancer using Smart Order Router"
     })
     async swapOnBalancer(walletClient: EVMWalletClient, parameters: SwapParameters) {
-        const balancerApi = this.getBalancerApi(walletClient.getChain().id as ChainId);
+        const chainId = walletClient.getChain().id as ChainId;
+        const balancerApi = this.getBalancerApi(chainId);
 
         const tokenIn = new Token(
-            walletClient.getChain().id as ChainId,
+            chainId,
             parameters.tokenIn as `0x${string}`,
             parameters.tokenInDecimals
         );
 
         const tokenOut = new Token(
-            walletClient.getChain().id as ChainId,
+            chainId,
             parameters.tokenOut as `0x${string}`,
             parameters.tokenOutDecimals
         );
 
-        const swapAmount = {
-            amount: BigInt(parameters.amountIn),
-        };
+        console.log("parameters.amountIn", parameters.amountIn);
+        const swapAmount = TokenAmount.fromRawAmount(
+            tokenIn,
+            parameters.amountIn
+        );
+
+        console.log("swapAmount", swapAmount);
 
         const sorPaths = await balancerApi.sorSwapPaths.fetchSorSwapPaths({
-            chainId: walletClient.getChain().id as ChainId,
+            chainId,
             tokenIn: tokenIn.address,
             tokenOut: tokenOut.address,
             swapKind: SwapKind.GivenIn,
@@ -40,32 +66,35 @@ export class BalancerService {
         });
 
         const swap = new Swap({
-            chainId: walletClient.getChain().id as ChainId,
+            chainId,
             paths: sorPaths,
             swapKind: SwapKind.GivenIn,
         });
 
-        const provider = await walletClient.read;
-        const updated = await swap.query(provider);
+        const updated = await swap.query(this.rpcUrl);
 
+        console.log("updated query output", updated);
+
+        console.log("deadline", parameters.deadline);
         const callData = swap.buildCall({
             slippage: Slippage.fromPercentage(`${Number(parameters.slippage)}`),
-            deadline: parameters.deadline ? BigInt(parameters.deadline) : BigInt(Math.floor(Date.now() / 1000) + 3600),
+            deadline:  BigInt(Math.floor(Date.now() / 1000) + 3600),
             queryOutput: updated,
-            wethIsEth: parameters.wethIsEth,
-        });
+            wethIsEth: parameters.wethIsEth ?? false,
+            sender: walletClient.getAddress() as `0x${string}`,
+            recipient: walletClient.getAddress() as `0x${string}`,
+        }) as SwapBuildOutputExactIn;
 
         const tx = await walletClient.sendTransaction({
             to: callData.to as `0x${string}`,
             value: callData.value,
-            functionName: 'swap',
-            args: [callData.callData]
+            data: callData.callData
         });
 
         return {
             success: true,
             data: {
-                amountOut: updated.expectedAmountOut.toString(),
+                amountOut: callData.minAmountOut.amount.toString(),
                 txHash: tx.hash,
             }
         };
@@ -76,25 +105,21 @@ export class BalancerService {
         description: "Add liquidity to a Balancer pool"
     })
     async addLiquidity(walletClient: EVMWalletClient, parameters: LiquidityParameters) {
-        const balancerApi = this.getBalancerApi(walletClient.getChain().id as ChainId);
+        const chainId = walletClient.getChain().id as ChainId;
+        const balancerApi = this.getBalancerApi(chainId);
 
         const poolState = await balancerApi.pools.fetchPoolState(parameters.pool as `0x${string}`);
 
-        const amountsIn = parameters.amounts.map(amount => ({
-            amount: BigInt(amount.amount),
-            token: new Token(
-                walletClient.getChain().id as ChainId,
-                amount.token as `0x${string}`,
-                amount.decimals
-            )
+        const amountsIn = parameters.amounts.map((amount: { amount: string; decimals: number; token: string }) => ({
+            rawAmount: BigInt(amount.amount),
+            decimals: amount.decimals,
+            address: amount.token as `0x${string}`,
         }));
 
-        const provider = await walletClient.read;
-
-        const addLiquidityInput = {
+        const addLiquidityInput: AddLiquidityInput = {
+            chainId,
+            rpcUrl: this.rpcUrl,
             amountsIn,
-            chainId: walletClient.getChain().id as ChainId,
-            provider,
             kind: AddLiquidityKind.Unbalanced,
         };
 
@@ -104,21 +129,71 @@ export class BalancerService {
         const call = addLiquidity.buildCall({
             ...queryOutput,
             slippage: Slippage.fromPercentage(`${Number(parameters.slippage)}`),
-            chainId: walletClient.getChain().id as ChainId,
-            wethIsEth: parameters.wethIsEth,
+            chainId,
+            wethIsEth: parameters.wethIsEth ?? false,
         });
 
         const tx = await walletClient.sendTransaction({
             to: call.to as `0x${string}`,
             value: call.value,
-            functionName: 'addLiquidity',
-            args: [call.callData]
+            data: call.callData
         });
 
         return {
             success: true,
             data: {
-                bptReceived: queryOutput.bptOut.toString(),
+                bptOut: queryOutput.bptOut.amount.toString(),
+                txHash: tx.hash,
+            }
+        };
+    }
+
+    @Tool({
+        name: "remove_liquidity_from_balancer",
+        description: "Remove liquidity from a Balancer pool proportionally"
+    })
+    async removeLiquidity(walletClient: EVMWalletClient, parameters: RemoveLiquidityParameters) {
+        const chainId = walletClient.getChain().id as ChainId;
+        const balancerApi = this.getBalancerApi(chainId);
+
+        const poolState = await balancerApi.pools.fetchPoolState(parameters.pool as `0x${string}`);
+
+        const bptIn: InputAmount = {
+            rawAmount: BigInt(parameters.bptAmountIn),
+            decimals: 18, // BPT tokens always have 18 decimals
+            address: poolState.address,
+        };
+
+        const removeLiquidityInput: RemoveLiquidityInput = {
+            chainId,
+            rpcUrl: this.rpcUrl,
+            bptIn,
+            kind: RemoveLiquidityKind.Proportional,
+        };
+
+        const removeLiquidity = new RemoveLiquidity();
+        const queryOutput = await removeLiquidity.query(removeLiquidityInput, poolState);
+
+        const call = removeLiquidity.buildCall({
+            ...queryOutput,
+            slippage: Slippage.fromPercentage(`${Number(parameters.slippage)}`),
+            chainId,
+            wethIsEth: parameters.wethIsEth ?? false,
+        });
+
+        const tx = await walletClient.sendTransaction({
+            to: call.to as `0x${string}`,
+            value: call.value,
+            data: call.callData
+        });
+
+        return {
+            success: true,
+            data: {
+                amountsOut: queryOutput.amountsOut.map(amount => ({
+                    token: amount.token.address,
+                    amount: amount.amount.toString()
+                })),
                 txHash: tx.hash,
             }
         };
