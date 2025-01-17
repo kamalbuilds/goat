@@ -28,10 +28,6 @@ export class BalmyService {
                     slippagePercentage: 0.5,
                     txValidFor: "180s",
                     disableValidation: true,
-                    referrer: {
-                        address: "0x67E6FB17f0ff00C2fA8484C3A1a0A24FE9a817bf",
-                        name: "kamal",
-                    },
                 },
                 custom: {
                     bebop: {
