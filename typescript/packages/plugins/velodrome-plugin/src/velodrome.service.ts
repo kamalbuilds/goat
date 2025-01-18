@@ -64,12 +64,9 @@ export class VelodromeService {
                 parameters.stable,
             );
 
-            console.log(amountOutMin, "amountoutmin");
-
             // Apply slippage to quote (e.g. 0.5% slippage)
             const minAmountOut = (BigInt(amountOutMin) * BigInt(995)) / BigInt(1000);
 
-            console.log("Min amount out:", formatUnits(minAmountOut, 18));
             const timestamp = Math.floor(Date.now() / 1000) + parameters.deadline;
 
             // Create route array
@@ -82,8 +79,6 @@ export class VelodromeService {
             ];
 
             let txHash: { hash: string };
-
-            console.log("isETHIn:", isETHIn, "isETHOut:", isETHOut);
 
             if (isETHIn) {
                 // ETH -> Token
@@ -145,7 +140,6 @@ export class VelodromeService {
 
         // Extract the value from the quote object
         const quoteValue = (quote as { value: bigint }).value.toString();
-        console.log("Quote received:", quoteValue);
         return quoteValue;
     }
 
