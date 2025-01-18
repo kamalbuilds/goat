@@ -3,6 +3,39 @@ import { Tool } from "@goat-sdk/core";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm";
 import { ExecuteSwapParameters, GetAllowanceParameters, GetBalanceParameters, GetQuoteParameters } from "./parameters";
 
+type BalmyConfig = {
+    quotes: {
+        sourceList: {
+            type: "local";
+        };
+        defaultConfig: {
+            global: {
+                slippagePercentage: number;
+                txValidFor: string;
+                disableValidation: boolean;
+            };
+            custom: {
+                bebop: { enabled: boolean; apiKey: string };
+                "0x": { enabled: boolean; apiKey: string; baseUrl: string };
+                "li-fi": { apiKey: string };
+                paraswap: { enabled: boolean; sourceAllowlist: string[]; sourceDenylist: string[] };
+                "1inch": { enabled: boolean; customUrl: string; sourceAllowlist: string[] };
+            };
+        };
+    };
+    provider: {
+        source: {
+            type: "http";
+            url: string;
+            supportedChains: number[];
+        };
+        defaultConfig: {
+            chainId: number;
+            rpcUrl: string;
+        };
+    };
+};
+
 type TokenBalance = {
     [address: string]: string;
 };
@@ -18,58 +51,8 @@ type ChainBalances = {
 export class BalmyService {
     private sdk;
 
-    private config = {
-        quotes: {
-            sourceList: {
-                type: "local" as const,
-            },
-            defaultConfig: {
-                global: {
-                    slippagePercentage: 0.5,
-                    txValidFor: "180s",
-                    disableValidation: true,
-                },
-                custom: {
-                    bebop: {
-                        enabled: false,
-                        apiKey: "",
-                    },
-                    "0x": {
-                        enabled: true,
-                        apiKey: "",
-                        baseUrl: "https://api.0x.org",
-                    },
-                    "li-fi": {
-                        apiKey: "",
-                    },
-                    paraswap: {
-                        enabled: false,
-                        sourceAllowlist: [],
-                        sourceDenylist: [],
-                    },
-                    "1inch": {
-                        enabled: false,
-                        customUrl: "https://api.1inch.exchange/v3.0/56",
-                        sourceAllowlist: [],
-                    },
-                },
-            },
-        },
-        provider: {
-            source: {
-                type: "http" as const,
-                url: "https://mainnet.mode.network/",
-                supportedChains: [34443],
-            },
-            defaultConfig: {
-                chainId: 34443,
-                rpcUrl: "https://mainnet.mode.network/",
-            },
-        },
-    };
-
-    constructor() {
-        this.sdk = buildSDK(this.config);
+    constructor(config: BalmyConfig) {
+        this.sdk = buildSDK(config);
     }
 
     @Tool({
