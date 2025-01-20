@@ -4,7 +4,6 @@ import {
     AddLiquidityKind,
     BalancerApi,
     ChainId,
-    ExactInQueryOutput,
     InputAmount,
     RemoveLiquidity,
     RemoveLiquidityInput,
@@ -20,13 +19,18 @@ import { Tool } from "@goat-sdk/core";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm";
 import { LiquidityParameters, RemoveLiquidityParameters, SwapParameters } from "./parameters";
 
-export class BalancerService {
-    private getBalancerApi(chainId: ChainId) {
-        console.log("chainId from getbalancerapi", chainId);
-        return new BalancerApi("https://api-v3.balancer.fi/", ChainId.POLYGON);
-    }
+type BalancerConfig = {
+    apiUrl: string;
+    rpcUrl: string;
+    defaultChainId: ChainId;
+};
 
-    private rpcUrl = "https://polygon.llamarpc.com";
+export class BalancerService {
+    constructor(private config: BalancerConfig) {}
+
+    private getBalancerApi(chainId: ChainId) {
+        return new BalancerApi(this.config.apiUrl, chainId);
+    }
 
     @Tool({
         name: "swap_on_balancer",
@@ -37,13 +41,8 @@ export class BalancerService {
         const balancerApi = this.getBalancerApi(chainId);
 
         const tokenIn = new Token(chainId, parameters.tokenIn as `0x${string}`, parameters.tokenInDecimals);
-
         const tokenOut = new Token(chainId, parameters.tokenOut as `0x${string}`, parameters.tokenOutDecimals);
-
-        console.log("parameters.amountIn", parameters.amountIn);
         const swapAmount = TokenAmount.fromRawAmount(tokenIn, parameters.amountIn);
-
-        console.log("swapAmount", swapAmount);
 
         const sorPaths = await balancerApi.sorSwapPaths.fetchSorSwapPaths({
             chainId,
@@ -59,14 +58,11 @@ export class BalancerService {
             swapKind: SwapKind.GivenIn,
         });
 
-        const updated = await swap.query(this.rpcUrl);
+        const updated = await swap.query(this.config.rpcUrl);
 
-        console.log("updated query output", updated);
-
-        console.log("deadline", parameters.deadline);
         const callData = swap.buildCall({
             slippage: Slippage.fromPercentage(`${Number(parameters.slippage)}`),
-            deadline: BigInt(Math.floor(Date.now() / 1000) + 3600),
+            deadline: BigInt(Math.floor(Date.now() / 1000) + (parameters.deadline || 3600)),
             queryOutput: updated,
             wethIsEth: parameters.wethIsEth ?? false,
             sender: walletClient.getAddress() as `0x${string}`,
@@ -106,7 +102,7 @@ export class BalancerService {
 
         const addLiquidityInput: AddLiquidityInput = {
             chainId,
-            rpcUrl: this.rpcUrl,
+            rpcUrl: this.config.rpcUrl,
             amountsIn,
             kind: AddLiquidityKind.Unbalanced,
         };
@@ -154,7 +150,7 @@ export class BalancerService {
 
         const removeLiquidityInput: RemoveLiquidityInput = {
             chainId,
-            rpcUrl: this.rpcUrl,
+            rpcUrl: this.config.rpcUrl,
             bptIn,
             kind: RemoveLiquidityKind.Proportional,
         };
