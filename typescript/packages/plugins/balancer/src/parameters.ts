@@ -25,11 +25,15 @@ const TokenAmount = z.object({
 export class LiquidityParameters extends createToolParameters(
     z.object({
         pool: hexAddress.describe("The address of the Balancer pool"),
-        amounts: z.array(z.object({
-            token: hexAddress.describe("Token address"),
-            amount: z.string().describe("Token amount (in basis points/wei)"),
-            decimals: z.number().describe("Token decimals"),
-        })).describe("Array of token amounts to add as liquidity"),
+        amounts: z
+            .array(
+                z.object({
+                    token: hexAddress.describe("Token address"),
+                    amount: z.string().describe("Token amount (in basis points/wei)"),
+                    decimals: z.number().describe("Token decimals"),
+                }),
+            )
+            .describe("Array of token amounts to add as liquidity"),
         kind: z.enum(["Unbalanced", "Exact"]).describe("Type of liquidity addition"),
         slippage: z.string().default("0.1").describe("Maximum slippage allowed (in percentage)"),
         deadline: z.number().optional().describe("Transaction deadline (in seconds)"),
