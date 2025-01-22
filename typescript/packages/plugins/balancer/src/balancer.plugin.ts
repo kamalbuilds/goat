@@ -1,6 +1,6 @@
 import { ChainId } from "@balancer/sdk";
 import { Chain, PluginBase } from "@goat-sdk/core";
-import { base, mode, polygon } from "viem/chains";
+import { base, mode, polygon , gnosis , arbitrum , avalanche , optimism , polygonZkEvm, fraxtal} from "viem/chains";
 import { BalancerService } from "./balancer.service";
 type BalancerConfig = {
     apiUrl: string;
@@ -14,7 +14,7 @@ const DEFAULT_CONFIG: BalancerConfig = {
     defaultChainId: ChainId.POLYGON,
 };
 
-const SUPPORTED_CHAINS = [mode, base , polygon];
+const SUPPORTED_CHAINS = [mode, base, polygon , gnosis , arbitrum , avalanche , optimism , polygonZkEvm, fraxtal];
 
 export class BalancerPlugin extends PluginBase {
     constructor(config: BalancerConfig = DEFAULT_CONFIG) {
