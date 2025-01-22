@@ -17,19 +17,20 @@ import {
 } from "@balancer/sdk";
 import { Tool } from "@goat-sdk/core";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm";
+import { BalancerConfig } from "./balancer.plugin";
 import { LiquidityParameters, RemoveLiquidityParameters, SwapParameters } from "./parameters";
 
-type BalancerConfig = {
-    apiUrl: string;
-    rpcUrl: string;
-    defaultChainId: ChainId;
-};
-
 export class BalancerService {
-    constructor(private config: BalancerConfig) {}
+    private rpcUrl: string;
+    private apiUrl: string;
+
+    constructor(config: BalancerConfig) {
+        this.rpcUrl = config.rpcUrl;
+        this.apiUrl = config.apiUrl ?? "https://api-v3.balancer.fi/";
+    }
 
     private getBalancerApi(chainId: ChainId) {
-        return new BalancerApi(this.config.apiUrl, chainId);
+        return new BalancerApi(this.apiUrl, chainId);
     }
 
     @Tool({
@@ -58,7 +59,7 @@ export class BalancerService {
             swapKind: SwapKind.GivenIn,
         });
 
-        const updated = await swap.query(this.config.rpcUrl);
+        const updated = await swap.query(this.rpcUrl);
 
         const callData = swap.buildCall({
             slippage: Slippage.fromPercentage(`${Number(parameters.slippage)}`),
@@ -102,7 +103,7 @@ export class BalancerService {
 
         const addLiquidityInput: AddLiquidityInput = {
             chainId,
-            rpcUrl: this.config.rpcUrl,
+            rpcUrl: this.rpcUrl,
             amountsIn,
             kind: AddLiquidityKind.Unbalanced,
         };
@@ -150,7 +151,7 @@ export class BalancerService {
 
         const removeLiquidityInput: RemoveLiquidityInput = {
             chainId,
-            rpcUrl: this.config.rpcUrl,
+            rpcUrl: this.rpcUrl,
             bptIn,
             kind: RemoveLiquidityKind.Proportional,
         };
