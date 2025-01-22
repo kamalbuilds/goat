@@ -1,6 +1,5 @@
 import { Tool } from "@goat-sdk/core";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm";
-import { formatUnits } from "viem";
 import { quoterabi } from "./abi/quoterabi";
 import { routerabi } from "./abi/routerabi";
 import { AddLiquidityParams, SwapExactTokensParams } from "./parameters";
