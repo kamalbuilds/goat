@@ -1,18 +1,17 @@
 {
-    "name": "goat-examples-vercel-ai-coingecko",
-    "version": "0.2.7",
+    "name": "goat-examples-vercel-ai-debridge-bridging",
+    "version": "0.0.2",
     "description": "",
     "private": true,
     "scripts": {
         "test": "vitest run --passWithNoTests"
     },
-    "author": "",
     "license": "MIT",
     "dependencies": {
         "@ai-sdk/openai": "^1.0.4",
         "@goat-sdk/adapter-vercel-ai": "workspace:*",
         "@goat-sdk/core": "workspace:*",
-        "@goat-sdk/plugin-coingecko": "workspace:*",
+        "@goat-sdk/plugin-debridge": "workspace:*",
         "@goat-sdk/wallet-viem": "workspace:*",
         "ai": "catalog:",
         "dotenv": "^16.4.5",
