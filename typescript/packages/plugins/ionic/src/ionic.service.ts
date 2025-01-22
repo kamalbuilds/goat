@@ -1,11 +1,9 @@
 import { Tool } from "@goat-sdk/core";
-import { EVMTransactionOptions, EVMWalletClient } from "@goat-sdk/wallet-evm";
-import { type Address, erc20Abi, formatUnits, parseUnits } from "viem";
-import { bigint, z } from "zod";
+import { EVMWalletClient } from "@goat-sdk/wallet-evm";
+import { type Address, formatUnits, parseUnits } from "viem";
 import { cerc20DelegatorAbi } from "./abis";
 import { ComptrollerProxyAbi } from "./abis/ComptrollerProxyAbi";
 import { poolAbi } from "./abis/Pool";
-import { poolLensAbi } from "./abis/PoolLens";
 import { ionicProtocolAddresses } from "./ionic.config";
 import {
     BorrowAssetParameters,
@@ -17,13 +15,6 @@ import {
 import type { HealthMetrics } from "./types";
 
 export class IonicService {
-    private supportedTokens: string[];
-    private loopableTokens = ["weETH", "dMBTC", "wrsETH", "ezETH", "STONE"];
-
-    constructor(supportedTokens?: string[]) {
-        this.supportedTokens = supportedTokens || Object.keys(ionicProtocolAddresses[34443].assets);
-    }
-
     private async getAssetConfig(chainId: number, symbol: string): Promise<{ address: Address; decimals: number }> {
         const config = ionicProtocolAddresses[chainId]?.assets?.[symbol];
         if (!config?.address || config.decimals === undefined) {
@@ -34,13 +25,11 @@ export class IonicService {
 
     @Tool({
         name: "ionic_supply_asset",
-        description: "Supply an asset to an Ionic Protocol pool",
+        description: "Supply an asset to an Ionic Protocol pool. Make sure to approve the pool first.",
     })
     async supplyAsset(wallet: EVMWalletClient, params: SupplyAssetParameters): Promise<string> {
         const { asset, amount } = params;
-        const chain = await wallet.getChain();
-
-        // approval is handled by the erc20 plugin
+        const chain = wallet.getChain();
 
         // Get token address from config
         const tokenAddress = ionicProtocolAddresses[chain.id]?.assets?.[asset]?.address;
@@ -70,7 +59,7 @@ export class IonicService {
 
         const comptrollerAddress = ionicProtocolAddresses[chain.id]?.Comptroller;
         if (!comptrollerAddress) throw new Error("Comptroller not found");
-        ``;
+
         const tokenAddress = ionicProtocolAddresses[chain.id]?.assets?.[asset]?.address;
         if (!tokenAddress) {
             throw new Error(`Token address not found for ${asset} on chain ${chain.id}`);
@@ -81,7 +70,7 @@ export class IonicService {
             address: comptrollerAddress,
             abi: ComptrollerProxyAbi,
             functionName: "borrowAllowed",
-            args: [address, await wallet.getAddress(), amount],
+            args: [address, wallet.getAddress(), amount],
         });
 
         if (borrowAllowed.toString() !== "0") {
@@ -105,8 +94,8 @@ export class IonicService {
     })
     async getHealthMetrics(wallet: EVMWalletClient, params: GetHealthMetricsParameters): Promise<HealthMetrics> {
         try {
-            const chain = await wallet.getChain();
-            const userAddress = await wallet.getAddress();
+            const chain = wallet.getChain();
+            const userAddress = wallet.getAddress();
 
             // Get Comptroller contract
             const comptrollerAddress = ionicProtocolAddresses[chain.id]?.Comptroller;
@@ -201,7 +190,6 @@ export class IonicService {
                 healthFactor: healthFactor,
             };
         } catch (error) {
-            console.error("Health metrics error:", error);
             throw new Error(`Failed to get health metrics: ${error}`);
         }
     }
@@ -210,10 +198,10 @@ export class IonicService {
         name: "ionic_loop_asset",
         description: "Loop (leverage) an asset position in Ionic Protocol",
     })
-    async loopAsset(wallet: EVMWalletClient, params: LoopAssetParameters): Promise<string> {
+    async loopAsset(wallet: EVMWalletClient, params: LoopAssetParameters) {
         try {
             const { asset, initialAmount, targetltv, maxIterations } = params;
-            const chain = await wallet.getChain();
+            const chain = wallet.getChain();
             const { address: assetAddress } = await this.getAssetConfig(chain.id, asset);
 
             // Get Comptroller contract
@@ -254,7 +242,7 @@ export class IonicService {
                 const borrowAmount = (currentAmount * targetLTV) / parseUnits("1.0", 18);
 
                 // Borrow
-                const borrowTx = await wallet.sendTransaction({
+                await wallet.sendTransaction({
                     to: assetAddress,
                     abi: cerc20DelegatorAbi,
                     functionName: "borrow",
@@ -262,7 +250,7 @@ export class IonicService {
                 });
 
                 // Supply borrowed amount
-                const supplyTx = await wallet.sendTransaction({
+                await wallet.sendTransaction({
                     to: assetAddress,
                     abi: cerc20DelegatorAbi,
                     functionName: "mint",
@@ -270,12 +258,15 @@ export class IonicService {
                 });
 
                 currentAmount = borrowAmount;
-                console.log(`Completed iteration ${i + 1}, current amount: ${formatUnits(currentAmount, 18)}`);
             }
 
-            return "Looping completed successfully";
+            return {
+                initialSupplyTx: initialSupplyTx.hash,
+                enterMarketsTx: enterMarketsTx.hash,
+                iterations: iterations,
+                currentAmount: formatUnits(currentAmount, 18),
+            };
         } catch (error) {
-            console.error("Loop error:", error);
             throw new Error(`Failed to loop asset: ${error}`);
         }
     }
@@ -284,9 +275,9 @@ export class IonicService {
         name: "ionic_swap_collateral",
         description: "Swap one collateral asset for another while maintaining borrow position",
     })
-    async swapCollateral(wallet: EVMWalletClient, params: SwapCollateralParameters): Promise<string> {
+    async swapCollateral(wallet: EVMWalletClient, params: SwapCollateralParameters) {
         const { fromAsset, toAsset, amount } = params;
-        const chain = await wallet.getChain();
+        const chain = wallet.getChain();
 
         // First withdraw the collateral
         const fromAssetConfig = await this.getAssetConfig(chain.id, fromAsset);
@@ -306,29 +297,9 @@ export class IonicService {
             args: [toAsset, amount],
         });
 
-        return "Collateral swap completed successfully";
-    }
-
-    private async getAssetPrice(wallet: EVMWalletClient, assetAddress: Address): Promise<bigint> {
-        const chain = await wallet.getChain();
-        const priceOracleAddress = ionicProtocolAddresses[chain.id]?.PriceOracle;
-        if (!priceOracleAddress) throw new Error("Price oracle not found");
-
-        const price = (await wallet.read({
-            address: priceOracleAddress,
-            abi: [
-                {
-                    inputs: [{ name: "asset", type: "address" }],
-                    name: "getUnderlyingPrice",
-                    outputs: [{ name: "", type: "uint256" }],
-                    stateMutability: "view",
-                    type: "function",
-                },
-            ],
-            functionName: "getUnderlyingPrice",
-            args: [assetAddress],
-        })) as unknown as bigint;
-
-        return price;
+        return {
+            poolTx: pool.hash,
+            supplyNewCollateralTx: supplynewcollateral.hash,
+        };
     }
 }

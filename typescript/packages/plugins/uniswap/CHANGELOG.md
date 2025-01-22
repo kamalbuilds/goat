@@ -1,5 +1,38 @@
 # @goat-sdk/plugin-uniswap
 
+## 0.2.9
+
+### Patch Changes
+
+- d8b05a5: Fix endpoints
+
+## 0.2.8
+
+### Patch Changes
+
+- bff4fa1: Minor chores
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [2b4b8e8]
+  - @goat-sdk/core@0.4.6
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [b9af25b]
+  - @goat-sdk/core@0.4.5
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [50180d4]
+  - @goat-sdk/core@0.4.4
+
 ## 0.2.4
 
 ### Patch Changes

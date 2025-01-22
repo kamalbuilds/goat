@@ -23,7 +23,7 @@ export function getCreateAndPayOrderParameters(callDataSchema: z.ZodSchema) {
             .object({
                 method: z
                     .enum(["ethereum", "ethereum-sepolia", "base", "base-sepolia", "polygon", "polygon-amoy", "solana"])
-                    .describe("The blockchain network to use for the transaction"), // TOOD: This is not the full list of methods
+                    .describe("The blockchain network to use for the transaction"), // TODO: This is not the full list of methods
                 currency: z.enum(["usdc"]).describe("The currency to use for payment"), // TODO: This is not the full list of currencies
                 payerAddress: z.string().describe("The address that will pay for the transaction"), // TODO: This required for now, as this will create and buy the order in 1 tool
                 receiptEmail: z.string().optional().describe("Optional email to send payment receipt to"),
@@ -36,7 +36,9 @@ export function getCreateAndPayOrderParameters(callDataSchema: z.ZodSchema) {
                 z.object({
                     collectionLocator: z
                         .string()
-                        .describe("The collection locator. Ex: 'crossmint:3351221a-6d91-419a-b3a9-a6c54b74ab78'"), // TODO: Add tokenLocator support
+                        .describe(
+                            "The collection locator. Ex: 'crossmint:<crossmint_collection_id>', '<chain>:<contract_address>'",
+                        ), // TODO: Add tokenLocator support
                     callData: callDataSchema,
                 }),
             )
