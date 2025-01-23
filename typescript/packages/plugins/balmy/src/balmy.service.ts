@@ -1,102 +1,17 @@
 import { QuoteRequest, buildSDK } from "@balmy/sdk";
 import { Tool } from "@goat-sdk/core";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm";
-import { ExecuteSwapParameters, GetAllowanceParameters, GetBalanceParameters, GetQuoteParameters } from "./parameters";
-
-type BalmyConfig = {
-    quotes: {
-        sourceList: {
-            type: "local";
-        };
-        defaultConfig: {
-            global: {
-                slippagePercentage: number;
-                txValidFor: string;
-                disableValidation: boolean;
-            };
-            custom: {
-                bebop: { enabled: boolean; apiKey: string };
-                "0x": { enabled: boolean; apiKey: string; baseUrl: string };
-                "li-fi": { apiKey: string };
-                paraswap: { enabled: boolean; sourceAllowlist: string[]; sourceDenylist: string[] };
-                "1inch": { enabled: boolean; customUrl: string; sourceAllowlist: string[] };
-            };
-        };
-    };
-    provider: {
-        source: {
-            type: "http";
-            url: string;
-            supportedChains: number[];
-        };
-        defaultConfig: {
-            chainId: number;
-            rpcUrl: string;
-        };
-    };
-};
-
-type TokenBalance = {
-    [address: string]: string;
-};
-
-type TokenBalances = {
-    [token: string]: TokenBalance;
-};
-
-type ChainBalances = {
-    [chainId: string]: TokenBalances;
-};
+import { ExecuteSwapParameters, GetQuoteParameters } from "./parameters";
 
 export class BalmyService {
     private sdk;
 
-    constructor(config: BalmyConfig) {
-        this.sdk = buildSDK(config);
+    constructor() {
+        this.sdk = buildSDK();
     }
 
     @Tool({
-        description: "Get token balances for an account",
-    })
-    async getBalances(walletClient: EVMWalletClient, parameters: GetBalanceParameters) {
-        const chainid = await walletClient.getChain().id;
-
-        const balances = await this.sdk.balanceService.getBalances({
-            tokens: [
-                {
-                    chainId: chainid,
-                    account: parameters.account,
-                    token: parameters.token,
-                },
-            ],
-        });
-
-        return Object.entries(balances).reduce((acc: ChainBalances, [chainId, tokens]) => {
-            acc[chainId] = Object.entries(tokens).reduce((tokenAcc: TokenBalances, [token, balance]) => {
-                tokenAcc[token] = Object.entries(balance).reduce((balAcc: TokenBalance, [address, amount]) => {
-                    balAcc[address] = amount.toString();
-                    return balAcc;
-                }, {});
-                return tokenAcc;
-            }, {});
-            return acc;
-        }, {});
-    }
-
-    @Tool({
-        description: "Get token allowance for my account",
-    })
-    async getAllowances(walletClient: EVMWalletClient, parameters: GetAllowanceParameters) {
-        return await this.sdk.allowanceService.getAllowanceInChain({
-            chainId: parameters.chainId,
-            token: parameters.token,
-            owner: parameters.owner,
-            spender: parameters.spender,
-        });
-    }
-
-    @Tool({
-        description: "Get quotes for a token swap",
+        description: "Get quotes for a token swap using Balmy",
     })
     async getQuote(walletClient: EVMWalletClient, parameters: GetQuoteParameters) {
         const chainid = await walletClient.getChain().id;
@@ -120,12 +35,16 @@ export class BalmyService {
             takerAddress: parameters.takerAddress || "0x0000000000000000000000000000000000000000",
         };
 
+        console.log("request", request);
+
         const quotes = await this.sdk.quoteService.getAllQuotesWithTxs({
             request: request,
             config: {
                 timeout: "10s",
             },
         });
+
+        console.log(quotes);
 
         // Convert BigInt values to strings for logging and return
         const quotesForLog = quotes.map((quote) => ({
@@ -168,12 +87,13 @@ export class BalmyService {
     }
 
     @Tool({
-        description: "Execute a swap using the best quote, also ensure that ERC20 approval is done before calling this",
+        description:
+            "Execute a swap using the best quote using Balmy, also ensure that ERC20 approval is done before calling this",
     })
     async executeSwap(walletClient: EVMWalletClient, parameters: ExecuteSwapParameters) {
         const bestQuote = await this.getQuote(walletClient, parameters);
 
-        const data = bestQuote.tx.data as `0x${string}`;
+        const data = `0x${bestQuote.tx.data.replace("0x", "")}` as `0x${string}`;
 
         const swaptxn = await walletClient.sendTransaction({
             to: bestQuote.tx.to,
