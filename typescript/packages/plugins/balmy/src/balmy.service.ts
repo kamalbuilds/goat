@@ -35,16 +35,12 @@ export class BalmyService {
             takerAddress: parameters.takerAddress || "0x0000000000000000000000000000000000000000",
         };
 
-        console.log("request", request);
-
         const quotes = await this.sdk.quoteService.getAllQuotesWithTxs({
             request: request,
             config: {
                 timeout: "10s",
             },
         });
-
-        console.log(quotes);
 
         // Convert BigInt values to strings for logging and return
         const quotesForLog = quotes.map((quote) => ({
