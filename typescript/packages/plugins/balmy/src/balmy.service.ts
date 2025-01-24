@@ -88,7 +88,7 @@ export class BalmyService {
     async executeSwap(walletClient: EVMWalletClient, parameters: ExecuteSwapParameters) {
         const bestQuote = await this.getQuote(walletClient, parameters);
 
-        const data = `0x${bestQuote.tx.data.replace("0x", "")}` as `0x${string}`;
+        const data = bestQuote.tx.data as `0x${string}`;
 
         const swaptxn = await walletClient.sendTransaction({
             to: bestQuote.tx.to,
