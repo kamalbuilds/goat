@@ -24,14 +24,13 @@ export class BalmyService {
                 parameters.order.type === "sell"
                     ? {
                           type: "sell",
-                          sellAmount: parameters.order.Amount,
+                          sellAmount: parameters.order.amount,
                       }
                     : {
                           type: "buy",
-                          buyAmount: parameters.order.Amount,
+                          buyAmount: parameters.order.amount,
                       },
             slippagePercentage: parameters.slippagePercentage,
-            gasSpeed: parameters.gasSpeed,
             takerAddress: parameters.takerAddress || "0x0000000000000000000000000000000000000000",
         };
 
