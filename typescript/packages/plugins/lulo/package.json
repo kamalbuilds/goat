@@ -1,25 +1,16 @@
 {
-    "name": "@goat-sdk/plugin-solana-magiceden",
-    "version": "0.2.13",
+    "name": "@goat-sdk/plugin-lulo",
+    "version": "0.1.1",
     "files": ["dist/**/*", "README.md", "package.json"],
     "scripts": {
         "build": "tsup",
         "clean": "rm -rf dist",
         "test": "vitest run --passWithNoTests"
     },
-    "sideEffects": false,
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
-    "dependencies": {
-        "@goat-sdk/core": "workspace:*",
-        "@goat-sdk/wallet-solana": "workspace:*",
-        "@solana/web3.js": "catalog:",
-        "zod": "catalog:"
-    },
-    "peerDependencies": {
-        "@goat-sdk/core": "workspace:*"
-    },
+    "sideEffects": false,
     "homepage": "https://ohmygoat.dev",
     "repository": {
         "type": "git",
@@ -29,5 +20,13 @@
     "bugs": {
         "url": "https://github.com/goat-sdk/goat/issues"
     },
-    "keywords": ["ai", "agents", "web3"]
+    "keywords": ["ai", "agents", "web3"],
+    "dependencies": {
+        "@goat-sdk/core": "workspace:*",
+        "zod": "catalog:",
+        "@goat-sdk/wallet-solana": "workspace:*"
+    },
+    "peerDependencies": {
+        "@goat-sdk/core": "workspace:*"
+    }
 }
