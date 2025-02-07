@@ -1,132 +1,163 @@
 import { Tool } from "@goat-sdk/core";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm";
-import { ethers } from "ethers";
+import { ERC20_ABI } from "./abi/erc20abi";
+import { factoryAbi } from "./abi/factoryabi";
+import { quoterv2abi } from "./abi/quoterv2abi";
+import { swaprouterabi } from "./abi/swaprouterabi";
+import { POSITION_MANAGER_ABI } from "./abi/nftpositionmanager";
 import { DragonswapConfig } from "./dragonswap.plugin";
-import { SwapParameters, AddLiquidityParameters, RemoveLiquidityParameters } from "./parameters";
-import { ROUTER_ABI, FACTORY_ABI, PAIR_ABI, ERC20_ABI } from "./abis";
+import {
+    AddLiquidityParameters,
+    CollectFeesParameters,
+    ExactInputSingleParameters,
+    RemoveLiquidityParameters,
+} from "./parameters";
 
 export class DragonswapService {
-    private router: ethers.Contract;
-    private factory: ethers.Contract;
-
     constructor(private readonly config: DragonswapConfig) {}
 
-    private async getRouter(walletClient: EVMWalletClient) {
-        if (!this.router) {
-            this.router = new ethers.Contract(
-                this.config.routerAddress!,
-                ROUTER_ABI,
-                await walletClient.getSigner()
-            );
-        }
-        return this.router;
-    }
-
-    private async getFactory(walletClient: EVMWalletClient) {
-        if (!this.factory) {
-            this.factory = new ethers.Contract(
-                this.config.factoryAddress!,
-                FACTORY_ABI,
-                await walletClient.getSigner()
-            );
-        }
-        return this.factory;
-    }
-
     @Tool({
-        description: "Swap tokens on Dragonswap",
+        name: "swap_exact_input_single_on_dragonswap",
+        description: "Swap tokens on Dragonswap using exact input amount",
     })
-    async swap(walletClient: EVMWalletClient, parameters: SwapParameters) {
-        const router = await this.getRouter(walletClient);
-        const deadline = parameters.deadline || Math.floor(Date.now() / 1000) + 1200;
-
+    async exactInputSingle(walletClient: EVMWalletClient, parameters: ExactInputSingleParameters) {
         // Approve token if needed
-        const tokenContract = new ethers.Contract(
-            parameters.tokenIn,
-            ERC20_ABI,
-            await walletClient.getSigner()
-        );
-        await tokenContract.approve(this.config.routerAddress!, parameters.amountIn);
+        await walletClient.sendTransaction({
+            to: parameters.tokenIn as `0x${string}`,
+            abi: ERC20_ABI,
+            functionName: "approve",
+            args: [this.config.routerAddress, parameters.amountIn],
+        });
 
         // Execute swap
-        const tx = await router.swapExactTokensForTokens(
-            parameters.amountIn,
-            parameters.amountOutMin,
-            [parameters.tokenIn, parameters.tokenOut],
-            await walletClient.getAddress(),
-            deadline
-        );
+        const tx = await walletClient.sendTransaction({
+            to: this.config.routerAddress as `0x${string}`,
+            abi: swaprouterabi,
+            functionName: "exactInputSingle",
+            args: [{
+                tokenIn: parameters.tokenIn,
+                tokenOut: parameters.tokenOut,
+                fee: parameters.fee,
+                recipient: parameters.recipient,
+                deadline: parameters.deadline,
+                amountIn: parameters.amountIn,
+                amountOutMinimum: parameters.amountOutMinimum,
+                sqrtPriceLimitX96: parameters.sqrtPriceLimitX96 || 0,
+            }],
+        });
 
         return tx.hash;
     }
 
     @Tool({
+        name: "get_quote_from_dragonswap",
+        description: "Get quote for a swap on Dragonswap",
+    })
+    async getQuote(walletClient: EVMWalletClient, parameters: ExactInputSingleParameters) {
+        
+        const quote = await walletClient.read({
+            address: this.config.quoterAddress as `0x${string}`,
+            abi: quoterv2abi,
+            functionName: "quoteExactInputSingle",
+            args: [{
+                tokenIn: parameters.tokenIn,
+                tokenOut: parameters.tokenOut,
+                fee: parameters.fee,
+                amountIn: parameters.amountIn,
+                sqrtPriceLimitX96: parameters.sqrtPriceLimitX96 || 0,
+            }],
+        }) as any as { amountOut: string, sqrtPriceX96After: string, initializedTicksCrossed: boolean, gasEstimate: string };
+
+        return {
+            amountOut: quote.amountOut.toString(),
+            sqrtPriceX96After: quote.sqrtPriceX96After.toString(),
+            initializedTicksCrossed: quote.initializedTicksCrossed,
+            gasEstimate: quote.gasEstimate.toString(),
+        };
+    }
+
+    @Tool({
+        name: "add_liquidity_to_dragonswap",
         description: "Add liquidity to Dragonswap pool",
     })
     async addLiquidity(walletClient: EVMWalletClient, parameters: AddLiquidityParameters) {
-        const router = await this.getRouter(walletClient);
-        const deadline = parameters.deadline || Math.floor(Date.now() / 1000) + 1200;
-
         // Approve tokens
-        const tokenA = new ethers.Contract(
-            parameters.tokenA,
-            ERC20_ABI,
-            await walletClient.getSigner()
-        );
-        const tokenB = new ethers.Contract(
-            parameters.tokenB,
-            ERC20_ABI,
-            await walletClient.getSigner()
-        );
+        await walletClient.sendTransaction({
+            to: parameters.token0 as `0x${string}`,
+            abi: ERC20_ABI,
+            functionName: "approve",
+            args: [this.config.nonfungiblePositionManagerAddress, parameters.amount0Desired],
+        });
 
-        await tokenA.approve(this.config.routerAddress!, parameters.amountADesired);
-        await tokenB.approve(this.config.routerAddress!, parameters.amountBDesired);
+        await walletClient.sendTransaction({
+            to: parameters.token1 as `0x${string}`,
+            abi: ERC20_ABI,
+            functionName: "approve",
+            args: [this.config.nonfungiblePositionManagerAddress, parameters.amount1Desired],
+        });
 
         // Add liquidity
-        const tx = await router.addLiquidity(
-            parameters.tokenA,
-            parameters.tokenB,
-            parameters.amountADesired,
-            parameters.amountBDesired,
-            parameters.amountAMin,
-            parameters.amountBMin,
-            await walletClient.getAddress(),
-            deadline
-        );
+        const tx = await walletClient.sendTransaction({
+            to: this.config.nonfungiblePositionManagerAddress as `0x${string}`,
+            abi: POSITION_MANAGER_ABI,
+            functionName: "mint",
+            args: [{
+                token0: parameters.token0,
+                token1: parameters.token1,
+                fee: parameters.fee,
+                tickLower: parameters.tickLower,
+                tickUpper: parameters.tickUpper,
+                amount0Desired: parameters.amount0Desired,
+                amount1Desired: parameters.amount1Desired,
+                amount0Min: parameters.amount0Min,
+                amount1Min: parameters.amount1Min,
+                recipient: parameters.recipient,
+                deadline: parameters.deadline,
+            }],
+        });
 
         return tx.hash;
     }
 
     @Tool({
+        name: "remove_liquidity_from_dragonswap",
         description: "Remove liquidity from Dragonswap pool",
     })
     async removeLiquidity(walletClient: EVMWalletClient, parameters: RemoveLiquidityParameters) {
-        const router = await this.getRouter(walletClient);
-        const deadline = parameters.deadline || Math.floor(Date.now() / 1000) + 1200;
-
-        // Get pair address
-        const factory = await this.getFactory(walletClient);
-        const pairAddress = await factory.getPair(parameters.tokenA, parameters.tokenB);
-        
-        // Approve LP tokens
-        const pair = new ethers.Contract(
-            pairAddress,
-            PAIR_ABI,
-            await walletClient.getSigner()
-        );
-        await pair.approve(this.config.routerAddress!, parameters.liquidity);
-
-        // Remove liquidity
-        const tx = await router.removeLiquidity(
-            parameters.tokenA,
-            parameters.tokenB,
-            parameters.liquidity,
-            parameters.amountAMin,
-            parameters.amountBMin,
-            await walletClient.getAddress(),
-            deadline
-        );
+        const tx = await walletClient.sendTransaction({
+            to: this.config.nonfungiblePositionManagerAddress as `0x${string}`,
+                abi: POSITION_MANAGER_ABI,
+                functionName: "decreaseLiquidity",
+                args: [{
+                    tokenId: parameters.tokenId,
+                    liquidity: parameters.liquidity,
+                    amount0Min: parameters.amount0Min,
+                    amount1Min: parameters.amount1Min,
+                    deadline: parameters.deadline,
+                }],
+            });
 
         return tx.hash;
     }
-} 
+
+    @Tool({
+        name: "collect_fees_from_dragonswap",
+        description: "Collect fees from a Dragonswap position",
+    })
+    async collectFees(walletClient: EVMWalletClient, parameters: CollectFeesParameters) {
+
+        const tx = await walletClient.sendTransaction({
+            to: this.config.nonfungiblePositionManagerAddress as `0x${string}`,
+            functionName: "collect",
+            args: [{
+                tokenId: parameters.tokenId,
+                recipient: parameters.recipient,
+                amount0Max: parameters.amount0Max,
+                amount1Max: parameters.amount1Max,
+            }],
+            abi: POSITION_MANAGER_ABI,
+        });
+
+        return tx.hash;
+    }
+}

@@ -6,13 +6,16 @@ export type DragonswapConfig = {
     routerAddress?: string;
     factoryAddress?: string;
     wseiAddress?: string;
-    rpcUrl?: string;
+    nonfungiblePositionManagerAddress?: string;
+    quoterAddress?: string;
 };
 
 const DEFAULT_CONFIG: DragonswapConfig = {
-    routerAddress: "0x7e1090746AB11DC1BbDAcE625644c066ad4cbF6b", // Default router address
-    factoryAddress: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f", // Default factory address
-    wseiAddress: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // Default WSEI address
+    // Production environment (pacific-1) addresses
+    routerAddress: "0x11DA6463D6Cb5a03411Dbf5ab6f6bc3997Ac7428", // SwapRouter02
+    factoryAddress: "0x179D9a5592Bc77050796F7be28058c51cA575df4", // DragonswapV2Factory
+    nonfungiblePositionManagerAddress: "0xa7FDcBe645d6b2B98639EbacbC347e2B575f6F70",
+    quoterAddress: "0x38F759cf0Af1D0dcAEd723a3967A3B658738eDe9" // QuoterV2
 };
 
 export class DragonswapPlugin extends PluginBase<EVMWalletClient> {
@@ -20,9 +23,9 @@ export class DragonswapPlugin extends PluginBase<EVMWalletClient> {
         super("dragonswap", [new DragonswapService(config)]);
     }
 
-    supportsChain = (chain: Chain) => chain.type === "evm";
+    supportsChain = (chain: Chain) => chain.type === "evm" ;
 }
 
 export function dragonswap(config?: DragonswapConfig) {
     return new DragonswapPlugin(config);
-} 
+}

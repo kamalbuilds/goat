@@ -1,6 +1,7 @@
 export { dragonswap, DragonswapPlugin, type DragonswapConfig } from "./dragonswap.plugin";
 export {
-    SwapParameters,
+    ExactInputSingleParameters,
     AddLiquidityParameters,
     RemoveLiquidityParameters,
-} from "./parameters"; 
+    CollectFeesParameters,
+} from "./parameters";
