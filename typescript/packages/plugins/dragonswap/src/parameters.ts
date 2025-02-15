@@ -1,19 +1,20 @@
 import { createToolParameters } from "@goat-sdk/core";
 import { z } from "zod";
 
-const hexAddress = z.string().regex(/^0x[a-fA-F0-9]{40}$/);
+// Update the hex address validation to be more lenient with case sensitivity
+const hexAddress = z.string().regex(/^0x[a-fA-F0-9]{40}$/i);
 
 export class ExactInputSingleParameters extends createToolParameters(
     z.object({
         tokenIn: hexAddress.describe("The address of the input token"),
         tokenOut: hexAddress.describe("The address of the output token"),
         fee: z.number().describe("The fee tier of the pool, denominated in hundredths of a bip"),
-        recipient: hexAddress.describe("The address to receive the output tokens"),
+        recipient: hexAddress.optional().describe("The address to receive the output tokens"),
         deadline: z.number().describe("The unix timestamp after which a swap will fail"),
         amountIn: z.string().describe("The amount of input tokens to send"),
         amountOutMinimum: z.string().describe("The minimum amount of output tokens to receive"),
         sqrtPriceLimitX96: z.string().optional().describe("The price limit for the trade"),
-    }),
+    })
 ) {}
 
 export class AddLiquidityParameters extends createToolParameters(
@@ -29,7 +30,7 @@ export class AddLiquidityParameters extends createToolParameters(
         amount1Min: z.string().describe("The minimum amount of token1 to deposit"),
         recipient: hexAddress.describe("The address that receives the liquidity position"),
         deadline: z.number().describe("The unix timestamp after which the transaction will fail"),
-    }),
+    })
 ) {}
 
 export class RemoveLiquidityParameters extends createToolParameters(
@@ -39,7 +40,7 @@ export class RemoveLiquidityParameters extends createToolParameters(
         amount0Min: z.string().describe("The minimum amount of token0 to receive"),
         amount1Min: z.string().describe("The minimum amount of token1 to receive"),
         deadline: z.number().describe("The unix timestamp after which the transaction will fail"),
-    }),
+    })
 ) {}
 
 export class CollectFeesParameters extends createToolParameters(
@@ -48,5 +49,5 @@ export class CollectFeesParameters extends createToolParameters(
         recipient: hexAddress.describe("The address to receive the collected fees"),
         amount0Max: z.string().describe("The maximum amount of token0 to collect"),
         amount1Max: z.string().describe("The maximum amount of token1 to collect"),
-    }),
+    })
 ) {}

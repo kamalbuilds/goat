@@ -29,7 +29,8 @@ export class DragonswapService {
             args: [this.config.routerAddress, parameters.amountIn],
         });
 
-        // Execute swap
+        const connectedaddress = await walletClient.getAddress();
+
         const tx = await walletClient.sendTransaction({
             to: this.config.routerAddress as `0x${string}`,
             abi: swaprouterabi,
@@ -38,7 +39,7 @@ export class DragonswapService {
                 tokenIn: parameters.tokenIn,
                 tokenOut: parameters.tokenOut,
                 fee: parameters.fee,
-                recipient: parameters.recipient,
+                recipient: parameters.recipient || connectedaddress,
                 deadline: parameters.deadline,
                 amountIn: parameters.amountIn,
                 amountOutMinimum: parameters.amountOutMinimum,
@@ -55,19 +56,20 @@ export class DragonswapService {
     })
     async getQuote(walletClient: EVMWalletClient, parameters: ExactInputSingleParameters) {
         
-        const quote = await walletClient.read({
-            address: this.config.quoterAddress as `0x${string}`,
+        const quote = await walletClient.sendTransaction({
+            to: this.config.quoterAddress as `0x${string}`,
             abi: quoterv2abi,
             functionName: "quoteExactInputSingle",
             args: [{
                 tokenIn: parameters.tokenIn,
                 tokenOut: parameters.tokenOut,
-                fee: parameters.fee,
                 amountIn: parameters.amountIn,
+                fee: parameters.fee,
                 sqrtPriceLimitX96: parameters.sqrtPriceLimitX96 || 0,
             }],
         }) as any as { amountOut: string, sqrtPriceX96After: string, initializedTicksCrossed: boolean, gasEstimate: string };
 
+        console.log("quote amountout", quote.amountOut.toString());
         return {
             amountOut: quote.amountOut.toString(),
             sqrtPriceX96After: quote.sqrtPriceX96After.toString(),
