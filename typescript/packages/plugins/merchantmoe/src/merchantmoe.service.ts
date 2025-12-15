@@ -1,8 +1,17 @@
-import { type ServiceBase, type WalletClientBase } from "@goat-sdk/core";
+import { Tool } from "@goat-sdk/core";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm";
-import { type Address } from "viem";
+import { parseUnits } from "viem";
 import { MerchantMoePluginOptions } from "./merchantmoe.plugin";
 import { erc20ABI, routerABI, factoryABI, stakingABI } from "./abi";
+import {
+    GetAmountsOutParams,
+    GetBalanceParams,
+    GetPairAtIndexParams,
+    GetPairParams,
+    StakeMoeParams,
+    SwapParams,
+    UnstakeMoeParams,
+} from "./parameters";
 
 // Contract addresses
 const ADDRESSES = {
@@ -16,161 +25,203 @@ const ADDRESSES = {
     VEMOE_REWARDER: "0x151B82CA3a0c9dA9Dfde200F9C527cD89dd6aea8",
 } as const;
 
-export class MerchantMoeService implements ServiceBase {
-    private client: EVMWalletClient;
-    private rpcUrl?: string;
-
-    constructor(options?: MerchantMoePluginOptions) {
-        this.rpcUrl = options?.rpcUrl;
-    }
-
-    setClient(client: WalletClientBase) {
-        if (!(client instanceof EVMWalletClient)) {
-            throw new Error("MerchantMoeService requires an EVMWalletClient");
-        }
-        this.client = client;
-    }
-
-    // Token Functions
-    async getMoeBalance(address: Address): Promise<bigint> {
-        return this.client.readContract({
+export class MerchantMoeService {
+    @Tool({
+        name: "merchantmoe_get_moe_balance",
+        description: "Get MOE token balance for a given address"
+    })
+    async getMoeBalance(walletClient: EVMWalletClient, parameters: GetBalanceParams) {
+        const result = await walletClient.read({
             address: ADDRESSES.MOE_TOKEN,
             abi: erc20ABI,
             functionName: "balanceOf",
-            args: [address],
+            args: [parameters.address as `0x${string}`],
         });
+        return BigInt(result.toString());
     }
 
-    // Staking Functions
-    async getStakedMoe(address: Address): Promise<bigint> {
-        return this.client.readContract({
-            address: ADDRESSES.MOE_STAKING,
-            abi: stakingABI,
-            functionName: "balanceOf",
-            args: [address],
+    @Tool({
+        name: "merchantmoe_stake_moe",
+        description: "Stake MOE tokens in the staking contract"
+    })
+    async stakeMoe(walletClient: EVMWalletClient, parameters: StakeMoeParams) {
+        const amount = parseUnits(parameters.amount, 18);
+        // First approve staking contract
+        const approvalHash = await walletClient.sendTransaction({
+            to: ADDRESSES.MOE_TOKEN,
+            abi: erc20ABI,
+            functionName: "approve",
+            args: [ADDRESSES.MOE_STAKING, amount],
         });
-    }
 
-    async stakeMoe(amount: bigint) {
-        return this.client.writeContract({
-            address: ADDRESSES.MOE_STAKING,
+        const hash = await walletClient.sendTransaction({
+            to: ADDRESSES.MOE_STAKING,
             abi: stakingABI,
             functionName: "stake",
             args: [amount],
         });
+
+        return hash.hash;
     }
 
-    async unstakeMoe(amount: bigint) {
-        return this.client.writeContract({
-            address: ADDRESSES.MOE_STAKING,
+    @Tool({
+        name: "merchantmoe_unstake_moe",
+        description: "Unstake MOE tokens from the staking contract"
+    })
+    async unstakeMoe(walletClient: EVMWalletClient, parameters: UnstakeMoeParams) {
+        const amount = parseUnits(parameters.amount, 18);
+        const hash = await walletClient.sendTransaction({
+            to: ADDRESSES.MOE_STAKING,
             abi: stakingABI,
             functionName: "withdraw",
             args: [amount],
         });
+        return hash.hash;
     }
 
-    async getEarnedMoe(address: Address): Promise<bigint> {
-        return this.client.readContract({
+    @Tool({
+        name: "merchantmoe_get_earned_moe",
+        description: "Get earned MOE rewards for a given address"
+    })
+    async getEarnedMoe(walletClient: EVMWalletClient, parameters: GetBalanceParams) {
+        const result = await walletClient.read({
             address: ADDRESSES.MOE_STAKING,
             abi: stakingABI,
             functionName: "earned",
-            args: [address],
+            args: [parameters.address as `0x${string}`],
         });
+        return BigInt(result.toString());
     }
 
-    async claimRewards() {
-        return this.client.writeContract({
-            address: ADDRESSES.MOE_STAKING,
+    @Tool({
+        name: "merchantmoe_claim_rewards",
+        description: "Claim earned MOE rewards from staking"
+    })
+    async claimRewards(walletClient: EVMWalletClient, parameters: GetBalanceParams) {
+        const hash = await walletClient.sendTransaction({
+            to: ADDRESSES.MOE_STAKING,
             abi: stakingABI,
             functionName: "getReward",
             args: [],
         });
+        return hash.hash;
     }
 
-    async exitStaking() {
-        return this.client.writeContract({
-            address: ADDRESSES.MOE_STAKING,
+    @Tool({
+        name: "merchantmoe_exit_staking",
+        description: "Withdraw all staked MOE and claim rewards"
+    })
+    async exitStaking(walletClient: EVMWalletClient, parameters: GetBalanceParams) {
+        const hash = await walletClient.sendTransaction({
+            to: ADDRESSES.MOE_STAKING,
             abi: stakingABI,
             functionName: "exit",
             args: [],
         });
+        return hash.hash;
     }
 
-    // VeMoe Functions
-    async getVeMoeBalance(address: Address): Promise<bigint> {
-        return this.client.readContract({
+    @Tool({
+        name: "merchantmoe_get_vemoe_balance",
+        description: "Get veMOE balance for a given address"
+    })
+    async getVeMoeBalance(walletClient: EVMWalletClient, parameters: GetBalanceParams) {
+        const result = await walletClient.read({
             address: ADDRESSES.VEMOE,
             abi: erc20ABI,
             functionName: "balanceOf",
-            args: [address],
+            args: [parameters.address as `0x${string}`],
         });
+        return BigInt(result.toString());
     }
 
-    // Router Functions
-    async getAmountsOut(amountIn: bigint, path: Address[]): Promise<bigint[]> {
-        return this.client.readContract({
+    @Tool({
+        name: "merchantmoe_get_amounts_out",
+        description: "Calculate output amounts for a given input amount and path"
+    })
+    async getAmountsOut(walletClient: EVMWalletClient, parameters: GetAmountsOutParams) {
+        const amountIn = parseUnits(parameters.amountIn, 18);
+        const result = await walletClient.read({
             address: ADDRESSES.MOE_ROUTER,
             abi: routerABI,
             functionName: "getAmountsOut",
-            args: [amountIn, path],
+            args: [amountIn, parameters.path as `0x${string}`[]],
         });
+        return ((result as unknown) as bigint[]).map(r => BigInt(r.toString()));
     }
 
-    async swapExactTokensForTokens(
-        amountIn: bigint,
-        amountOutMin: bigint,
-        path: Address[],
-        to: Address,
-        deadline: bigint
-    ) {
-        return this.client.writeContract({
-            address: ADDRESSES.MOE_ROUTER,
+    @Tool({
+        name: "merchantmoe_swap_tokens",
+        description: "Swap an exact amount of input tokens for output tokens"
+    })
+    async swapExactTokensForTokens(walletClient: EVMWalletClient, parameters: SwapParams) {
+        const amountIn = parseUnits(parameters.amountIn, 18);
+        const amountOutMin = parseUnits(parameters.amountOutMin, 18);
+        const deadline = BigInt(Math.floor(Date.now() / 1000) + parameters.deadline);
+
+        // First approve router
+        const approvalHash = await walletClient.sendTransaction({
+            to: parameters.path[0] as `0x${string}`,
+            abi: erc20ABI,
+            functionName: "approve",
+            args: [ADDRESSES.MOE_ROUTER, amountIn],
+        });
+
+        const hash = await walletClient.sendTransaction({
+            to: ADDRESSES.MOE_ROUTER,
             abi: routerABI,
             functionName: "swapExactTokensForTokens",
-            args: [amountIn, amountOutMin, path, to, deadline],
+            args: [
+                amountIn,
+                amountOutMin,
+                parameters.path as `0x${string}`[],
+                parameters.to as `0x${string}`,
+                deadline,
+            ],
         });
+
+        return hash.hash;
     }
 
-    async swapTokensForExactTokens(
-        amountOut: bigint,
-        amountInMax: bigint,
-        path: Address[],
-        to: Address,
-        deadline: bigint
-    ) {
-        return this.client.writeContract({
-            address: ADDRESSES.MOE_ROUTER,
-            abi: routerABI,
-            functionName: "swapTokensForExactTokens",
-            args: [amountOut, amountInMax, path, to, deadline],
-        });
-    }
-
-    // Factory Functions
-    async getPair(tokenA: Address, tokenB: Address): Promise<Address> {
-        return this.client.readContract({
+    @Tool({
+        name: "merchantmoe_get_pair",
+        description: "Get the address of a liquidity pair for two tokens"
+    })
+    async getPair(walletClient: EVMWalletClient, parameters: GetPairParams) {
+        const result = await walletClient.read({
             address: ADDRESSES.MOE_FACTORY,
             abi: factoryABI,
             functionName: "getPair",
-            args: [tokenA, tokenB],
+            args: [parameters.tokenA as `0x${string}`, parameters.tokenB as `0x${string}`],
         });
+        return ((result as unknown) as `0x${string}`);
     }
 
-    async getAllPairsLength(): Promise<bigint> {
-        return this.client.readContract({
+    @Tool({
+        name: "merchantmoe_get_pairs_length",
+        description: "Get the total number of liquidity pairs"
+    })
+    async getAllPairsLength(walletClient: EVMWalletClient, parameters: GetBalanceParams) {
+        const result = await walletClient.read({
             address: ADDRESSES.MOE_FACTORY,
             abi: factoryABI,
             functionName: "allPairsLength",
             args: [],
         });
+        return BigInt(result.toString());
     }
 
-    async getPairAtIndex(index: number): Promise<Address> {
-        return this.client.readContract({
+    @Tool({
+        name: "merchantmoe_get_pair_at_index",
+        description: "Get the address of a liquidity pair by its index"
+    })
+    async getPairAtIndex(walletClient: EVMWalletClient, parameters: GetPairAtIndexParams) {
+        const result = await walletClient.read({
             address: ADDRESSES.MOE_FACTORY,
             abi: factoryABI,
             functionName: "allPairs",
-            args: [index],
+            args: [parameters.index],
         });
+        return ((result as unknown) as `0x${string}`);
     }
 } 

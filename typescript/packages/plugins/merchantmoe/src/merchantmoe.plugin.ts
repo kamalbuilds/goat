@@ -8,8 +8,8 @@ export interface MerchantMoePluginOptions {
 
 export class MerchantMoePlugin extends PluginBase<EVMWalletClient> {
     constructor(options?: MerchantMoePluginOptions) {
-        super("merchantmoe", [new MerchantMoeService(options)]);
+        super("merchantmoe", [new MerchantMoeService()]);
     }
 
-    supportsChain = (chain: Chain) => chain.type === "evm" && chain.id === 34443; // Mode Mainnet
+    supportsChain = (chain: Chain) => chain.type === "evm" && chain.id === 5000; // Mode Mainnet
 } 
